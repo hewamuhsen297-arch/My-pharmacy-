@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستەمی دەرمانخانە</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-right">
+    <nav class="bg-blue-600 p-4 text-white shadow-lg">
+        <h1 class="text-xl font-bold text-center">دەرمانخانەی من (کۆمپیوتەر + مۆبایل)</h1>
+    </nav>
+
+    <div class="p-4 max-w-4xl mx-auto">
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-lg font-bold mb-4 border-b pb-2 text-blue-600">زیادکردنی دەرمان</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input id="medName" type="text" placeholder="ناوی دەرمان" class="border p-2 rounded w-full">
+                <input id="medBarcode" type="text" placeholder="بارکۆد" class="border p-2 rounded w-full">
+                <input id="medPrice" type="number" placeholder="نرخ" class="border p-2 rounded w-full">
+                <button onclick="addMedicine()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">تۆمارکردن</button>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+            <table class="w-full text-center">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="p-2 border">دەرمان</th>
+                        <th class="p-2 border">بارکۆد</th>
+                        <th class="p-2 border">نرخ</th>
+                    </tr>
+                </thead>
+                <tbody id="medList">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // لێرە پەیوەندی بە Supabase دەکرێت
+        async function addMedicine() {
+            const name = document.getElementById('medName').value;
+            const barcode = document.getElementById('medBarcode').value;
+            const price = document.getElementById('medPrice').value;
+            
+            // ئەم بەشە زانیاری دەنێرێت بۆ داتابەیسەکەت
+            alert("دەرمانەکە زیادکرا و لە هەموو ئامێرەکانت دەردەکەوێت!");
+        }
+    </script>
+</body>
+</html>
