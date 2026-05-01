@@ -3,119 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سیستەمی پێشکەوتووی سەیدەلیە</title>
+    <title>ڕاپۆرتی ڕۆژانەی دەرمانخانە</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 font-sans text-right">
+<body class="bg-gray-100 font-sans">
 
-    <div id="loginPage" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-[100]">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-80 text-center">
-            <h2 class="text-xl font-bold mb-6">بەڕێوبەری دەرمانخانە</h2>
-            <input id="adminPass" type="password" placeholder="ڕەمزی نهێنی" class="w-full border p-3 rounded-2xl mb-4 text-center outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
-            <button onclick="checkLogin()" class="w-full bg-blue-600 text-white py-3 rounded-2xl font-bold shadow-lg">چوونەژوورەوە</button>
-        </div>
-    </div>
-
-    <div id="mainDashboard" class="hidden">
-        <nav class="bg-blue-800 text-white p-4 shadow-xl flex justify-between items-center">
-            <h1 class="font-bold"><i class="fas fa-prescription-bottle-alt ml-2"></i>سیستەمی کۆگا و فرۆشتن</h1>
-            <button onclick="location.reload()" class="bg-red-500 px-4 py-1 rounded-xl text-xs">دەرچوون</button>
+    <div id="mainDashboard">
+        <nav class="bg-blue-800 text-white p-4 shadow-lg flex justify-between items-center no-print">
+            <h1 class="font-bold"><i class="fas fa-chart-line ml-2"></i>ڕاپۆرتی فرۆشتنی ڕۆژانە</h1>
+            <button onclick="window.print()" class="bg-green-600 px-4 py-2 rounded-xl text-sm font-bold shadow hover:bg-green-700 transition">
+                <i class="fas fa-print ml-1"></i> چاپی ڕاپۆرت
+            </button>
         </nav>
 
         <div class="container mx-auto p-4 space-y-6">
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white p-4 rounded-2xl shadow border-r-4 border-blue-500">
-                    <p class="text-gray-500 text-sm">فرۆشی ئەمڕۆ</p>
-                    <h3 id="dailySales" class="text-xl font-bold">0 د.ع</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 no-print">
+                <div class="bg-white p-5 rounded-2xl shadow border-r-4 border-blue-500">
+                    <p class="text-gray-500 text-xs font-bold mb-1">کۆی فرۆشتن</p>
+                    <h3 id="totalMoney" class="text-xl font-black text-blue-700">0 د.ع</h3>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow border-r-4 border-red-500">
-                    <p class="text-gray-500 text-sm">دەرمانی نزیک لە بەسەرچوون</p>
-                    <h3 id="expiryAlerts" class="text-xl font-bold text-red-600">0</h3>
+                <div class="bg-white p-5 rounded-2xl shadow border-r-4 border-green-500">
+                    <p class="text-gray-500 text-xs font-bold mb-1">دەرمانی فرۆشراو</p>
+                    <h3 id="itemsCount" class="text-xl font-black text-green-700">0</h3>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow border-r-4 border-green-500">
-                    <p class="text-gray-500 text-sm">کۆی دەرمان لە کۆگا</p>
-                    <h3 id="stockTotal" class="text-xl font-bold">0</h3>
+                <div class="bg-white p-5 rounded-2xl shadow border-r-4 border-purple-500">
+                    <p class="text-gray-500 text-xs font-bold mb-1">بەروار</p>
+                    <h3 class="text-sm font-bold text-gray-700" id="currentDate"></h3>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-3xl shadow border">
-                    <h2 class="font-bold mb-4 text-blue-700 border-b pb-2"><i class="fas fa-plus-circle ml-2"></i>زیادکردن بۆ کۆگا</h2>
-                    <div class="grid grid-cols-2 gap-3">
-                        <input id="newName" type="text" placeholder="ناوی دەرمان" class="col-span-2 border p-3 rounded-xl bg-gray-50">
-                        <input id="newPrice" type="number" placeholder="نرخی فرۆشتن" class="border p-3 rounded-xl bg-gray-50">
-                        <input id="newExpiry" type="date" class="border p-3 rounded-xl bg-gray-50">
-                        <input id="newBarcode" type="text" placeholder="بارکۆد" class="col-span-2 border p-3 rounded-xl bg-gray-50">
-                        <button onclick="addItem()" class="col-span-2 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-md">تۆمارکردن</button>
-                    </div>
+            <div class="bg-white rounded-3xl shadow-lg border overflow-hidden">
+                <div class="bg-gray-50 p-4 border-b">
+                    <h2 class="font-bold text-gray-700"><i class="fas fa-list-check ml-2"></i>لیستی وردەکاری فرۆشتن</h2>
                 </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right">
+                        <thead class="bg-blue-50 text-blue-800 uppercase text-sm">
+                            <tr>
+                                <th class="p-4 border-b">ناوی دەرمان</th>
+                                <th class="p-4 border-b text-center">نرخ (د.ع)</th>
+                                <th class="p-4 border-b text-center">کات</th>
+                                <th class="p-4 border-b text-center">کردار</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody" class="divide-y divide-gray-100">
+                            </tbody>
+                    </table>
+                </div>
+                <div id="emptyMsg" class="p-10 text-center text-gray-400 italic">
+                    هێشتا هیچ فرۆشتنێک تۆمار نەکراوە بۆ ئەمڕۆ.
+                </div>
+            </div>
 
-                <div class="bg-white p-6 rounded-3xl shadow border overflow-hidden">
-                    <h2 class="font-bold mb-4 text-red-600 border-b pb-2"><i class="fas fa-exclamation-triangle ml-2"></i>ئاگاداری بەسەرچوون</h2>
-                    <div id="expiryList" class="space-y-2 text-sm max-h-60 overflow-y-auto">
-                        <p class="text-gray-400 italic">هیچ دەرمانێکی بەسەرچوو نییە</p>
-                    </div>
+            <div class="bg-blue-50 p-6 rounded-2xl border-2 border-dashed border-blue-200 no-print">
+                <h3 class="font-bold mb-3 text-blue-800 text-sm">تاقی کردنەوەی فرۆشتن:</h3>
+                <div class="flex gap-2">
+                    <input id="testName" type="text" placeholder="ناوی دەرمان" class="flex-1 p-3 rounded-xl border">
+                    <input id="testPrice" type="number" placeholder="نرخ" class="w-32 p-3 rounded-xl border">
+                    <button onclick="addSaleRecord()" class="bg-blue-600 text-white px-6 rounded-xl font-bold">زیادکردن</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; }
+            .shadow-lg { shadow: none !important; border: 1px solid #eee; }
+        }
+    </style>
+
     <script>
-        const MY_PASS = "1998";
-        let inventory = [];
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ku-IQ');
+        let totalSales = 0;
+        let count = 0;
 
-        function checkLogin() {
-            if(document.getElementById('adminPass').value === MY_PASS) {
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('mainDashboard').classList.remove('hidden');
-            }
-        }
-
-        function addItem() {
-            const name = document.getElementById('newName').value;
-            const price = document.getElementById('newPrice').value;
-            const expiry = document.getElementById('newExpiry').value;
-            const barcode = document.getElementById('newBarcode').value;
-
-            if(!name || !expiry) return alert("تکایە زانیارییەکان تەواو بکە");
-
-            const item = { name, price, expiry, barcode };
-            inventory.push(item);
-            updateUI();
+        function addSaleRecord() {
+            const name = document.getElementById('testName').value;
+            const price = document.getElementById('testPrice').value;
             
-            // پاککردنەوە
-            document.getElementById('newName').value = "";
-            alert("دەرمانەکە زیادکرا");
-        }
+            if(!name || !price) return alert("زانیارییەکان بنوسە");
 
-        function updateUI() {
-            document.getElementById('stockTotal').innerText = inventory.length;
-            const list = document.getElementById('expiryList');
-            const alertCount = document.getElementById('expiryAlerts');
-            list.innerHTML = "";
-            let alerts = 0;
+            document.getElementById('emptyMsg').classList.add('hidden');
+            const now = new Date().toLocaleTimeString('ku-IQ', {hour: '2-digit', minute:'2-digit'});
+            
+            const row = `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 font-bold text-gray-800">${name}</td>
+                    <td class="p-4 text-center text-green-600 font-bold">${Number(price).toLocaleString()}</td>
+                    <td class="p-4 text-center text-gray-500">${now}</td>
+                    <td class="p-4 text-center">
+                        <button class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
 
-            const today = new Date();
-            const threeMonthsLater = new Date();
-            threeMonthsLater.setMonth(today.getMonth() + 3);
+            document.getElementById('reportTableBody').insertAdjacentHTML('afterbegin', row);
+            
+            totalSales += Number(price);
+            count++;
+            
+            document.getElementById('totalMoney').innerText = totalSales.toLocaleString() + " د.ع";
+            document.getElementById('itemsCount').innerText = count;
 
-            inventory.forEach(item => {
-                const expiryDate = new Date(item.expiry);
-                if(expiryDate <= threeMonthsLater) {
-                    alerts++;
-                    list.innerHTML += `
-                        <div class="flex justify-between bg-red-50 p-3 rounded-xl border-r-4 border-red-500">
-                            <span class="font-bold text-red-700">${item.name}</span>
-                            <span class="text-red-600">بەسەردەچێت لە: ${item.expiry}</span>
-                        </div>
-                    `;
-                }
-            });
-
-            alertCount.innerText = alerts;
-            if(alerts === 0) list.innerHTML = `<p class="text-gray-400 italic">هیچ دەرمانێکی بەسەرچوو نییە</p>`;
+            // Reset inputs
+            document.getElementById('testName').value = "";
+            document.getElementById('testPrice').value = "";
         }
     </script>
 </body>
