@@ -3,49 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سیستەمی دەرمانخانە</title>
+    <title>بەڕێوەبردنی دەرمانخانە</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 text-right">
-    <nav class="bg-blue-600 p-4 text-white shadow-lg">
-        <h1 class="text-xl font-bold text-center">دەرمانخانەی من (کۆمپیوتەر + مۆبایل)</h1>
-    </nav>
+<body class="bg-gray-100 font-sans">
 
-    <div class="p-4 max-w-4xl mx-auto">
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h2 class="text-lg font-bold mb-4 border-b pb-2 text-blue-600">زیادکردنی دەرمان</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input id="medName" type="text" placeholder="ناوی دەرمان" class="border p-2 rounded w-full">
-                <input id="medBarcode" type="text" placeholder="بارکۆد" class="border p-2 rounded w-full">
-                <input id="medPrice" type="number" placeholder="نرخ" class="border p-2 rounded w-full">
-                <button onclick="addMedicine()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">تۆمارکردن</button>
-            </div>
+    <div id="loginPage" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-[100]">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-80 text-center">
+            <i class="fas fa-user-lock text-4xl text-blue-600 mb-4"></i>
+            <h2 class="text-xl font-bold mb-6">بەڕێوبەر</h2>
+            <input id="adminPass" type="password" placeholder="ڕەمزی نهێنی" class="w-full border p-3 rounded-xl mb-4 text-center outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="checkLogin()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700">چوونەژوورەوە</button>
+            <p id="loginError" class="text-red-500 mt-3 text-sm hidden">ڕەمزەکە هەڵەیە!</p>
         </div>
+    </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
-            <table class="w-full text-center">
-                <thead>
-                    <tr class="bg-gray-200">
-                        <th class="p-2 border">دەرمان</th>
-                        <th class="p-2 border">بارکۆد</th>
-                        <th class="p-2 border">نرخ</th>
-                    </tr>
-                </thead>
-                <tbody id="medList">
-                    </tbody>
-            </table>
+    <div id="mainDashboard" class="hidden">
+        <nav class="bg-blue-800 text-white p-4 shadow-lg flex justify-between items-center">
+            <h1 class="font-bold"><i class="fas fa-clinic-medical ml-2"></i>کۆگای دەرمانخانە</h1>
+            <button onclick="logout()" class="bg-red-500 px-4 py-1 rounded-lg text-sm text-white">چوونەدەرەوە</button>
+        </nav>
+
+        <div class="container mx-auto p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow border">
+                    <h2 class="font-bold mb-4 text-blue-700 border-b pb-2">فرۆشتنی خێرا</h2>
+                    <input id="sellBarcode" type="text" placeholder="بارکۆدی دەرمان..." class="w-full border p-3 rounded-xl mb-2">
+                    <button onclick="alert('تۆمارکرا')" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">تۆمارکردنی فرۆشتن</button>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow border">
+                    <h2 class="font-bold mb-4 text-blue-700 border-b pb-2">زیادکردن بۆ کۆگا</h2>
+                    <input id="newName" type="text" placeholder="ناوی دەرمان" class="w-full border p-2 rounded mb-2 text-sm">
+                    <input id="newPrice" type="number" placeholder="نرخ" class="w-full border p-2 rounded mb-2 text-sm">
+                    <button onclick="alert('زیادکرا')" class="w-full bg-blue-600 text-white py-2 rounded font-bold">زیادکردن</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // لێرە پەیوەندی بە Supabase دەکرێت
-        async function addMedicine() {
-            const name = document.getElementById('medName').value;
-            const barcode = document.getElementById('medBarcode').value;
-            const price = document.getElementById('medPrice').value;
-            
-            // ئەم بەشە زانیاری دەنێرێت بۆ داتابەیسەکەت
-            alert("دەرمانەکە زیادکرا و لە هەموو ئامێرەکانت دەردەکەوێت!");
+        // ڕەمزەکە لێرە بگۆڕە (بۆ نموونە بیکە بە ١٩٩٨)
+        const MY_PASS = "1998"; 
+
+        function checkLogin() {
+            const val = document.getElementById('adminPass').value;
+            if(val === MY_PASS) {
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('mainDashboard').classList.remove('hidden');
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            location.reload();
         }
     </script>
 </body>
