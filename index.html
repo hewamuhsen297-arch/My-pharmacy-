@@ -3,184 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سەیدەلیەی ڕۆژیار - بەحرکە</title>
+    <title>سەیدەلیەی ڕۆژیار - سیستەمی کۆگا</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700;900&display=swap');
+        body { font-family: 'Noto Sans Arabic', sans-serif; }
         @media print { .no-print { display: none !important; } .print-only { display: block !important; } }
         .print-only { display: none; }
     </style>
 </head>
-<body class="bg-slate-50 font-sans">
+<body class="bg-slate-50">
 
     <script>
-        // بەستنەوە بە داتابەیسەکەی خۆت
+        // زانیارییەکانی داتابەیسەکەی خۆت - بە چاککراوی
         const SUPABASE_URL = "https://wpznipktdzhsmitfpdvl.supabase.co";
         const SUPABASE_KEY = "sb_publishable_J_06HBXNYKgxvNqLaEtPxA_U8CJVI89";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     </script>
 
-    <div id="loginPage" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[100] no-print">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-80 text-center border-t-8 border-blue-600">
-            <h1 class="text-2xl font-black text-blue-600 mb-2">سەیدەلیەی ڕۆژیار</h1>
-            <p class="text-xs text-gray-400 mb-6">بەحرکە - جوت سایدی گشتی</p>
-            <select id="userRole" class="w-full border p-3 rounded-xl mb-3 bg-gray-50 outline-none font-bold">
-                <option value="staff">کارمەند (Staff)</option>
-                <option value="admin">بەڕێوبەر (Admin)</option>
-            </select>
-            <input id="passField" type="password" placeholder="ڕەمزی نهێنی" class="w-full border p-3 rounded-xl mb-4 text-center outline-none">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg">چوونەژوورەوە</button>
+    <div id="loginPage" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[100] no-print px-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center border-t-8 border-blue-600">
+            <h1 class="text-3xl font-black text-blue-600 mb-2">سەیدەلیەی ڕۆژیار</h1>
+            <p class="text-sm text-gray-500 mb-8 font-bold">بەحرکە - نزیک مزگەوتی مەلا ڕەشید</p>
+            
+            <div class="space-y-4">
+                <select id="userRole" class="w-full border-2 border-gray-100 p-4 rounded-2xl bg-gray-50 outline-none font-bold text-gray-700 focus:border-blue-500 transition-all">
+                    <option value="staff">کارمەند (Staff)</option>
+                    <option value="admin">بەڕێوبەر (Admin)</option>
+                </select>
+                <input id="passField" type="password" placeholder="ڕەمزی نهێنی" class="w-full border-2 border-gray-100 p-4 rounded-2xl text-center outline-none focus:border-blue-500 transition-all font-bold">
+                <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg hover:bg-blue-700 transform active:scale-95 transition-all text-lg">چوونەژوورەوە</button>
+            </div>
         </div>
     </div>
 
     <div id="mainApp" class="hidden">
-        <nav class="bg-blue-900 text-white p-4 shadow-lg flex justify-between items-center no-print">
-            <div>
-                <h1 class="text-xl font-black">سەیدەلیەی ڕۆژیار</h1>
-                <p class="text-[10px] text-blue-200">بەحرکە - نزیک مزگەوتی مەلا ڕەشید</p>
-            </div>
-            <button onclick="location.reload()" class="bg-red-500 px-3 py-1 rounded-lg text-sm font-bold">دەرچوون</button>
-        </nav>
-
-        <div class="container mx-auto p-4 space-y-6 no-print">
-            
-            <div id="adminStats" class="grid grid-cols-2 md:grid-cols-3 gap-4 hidden">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border-r-4 border-green-500">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase">دەرمان لە کۆگا</p>
-                    <h3 id="stockCount" class="text-lg font-black text-blue-700">0</h3>
+        <nav class="bg-blue-900 text-white p-4 shadow-xl flex justify-between items-center no-print sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded-lg text-blue-900"><i class="fas fa-mortar-pestle text-xl"></i></div>
+                <div>
+                    <h1 class="text-xl font-black leading-tight">سەیدەلیەی ڕۆژیار</h1>
+                    <p class="text-[10px] text-blue-300 font-bold">سیستەمی بەڕێوەبردنی کۆگا</p>
                 </div>
             </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-7 bg-white p-5 rounded-3xl shadow-sm border">
-                    <div class="flex justify-between items-center mb-4 border-b pb-2">
-                        <h2 class="font-black text-green-800"><i class="fas fa-cart-shopping ml-2"></i>فرۆشتن</h2>
-                        <button onclick="startScanner('sell')" class="bg-green-50 text-green-600 px-3 py-1 rounded-lg text-xs font-bold border border-green-200">سکان</button>
-                    </div>
-                    
-                    <div class="flex flex-col md:flex-row gap-2 mb-4">
-                        <select id="sellSelect" class="flex-1 p-3 border rounded-xl bg-gray-50 font-bold outline-none"></select>
-                        <select id="sellUnit" class="p-3 border rounded-xl font-bold bg-white">
-                            <option value="pack">پاکەت</option>
-                            <option value="strip">شریت</option>
-                        </select>
-                        <input id="sellQty" type="number" value="1" min="1" class="w-20 p-3 border rounded-xl text-center font-bold">
-                        <button onclick="addToCart()" class="bg-green-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition">زیادکردن</button>
-                    </div>
-
-                    <div class="border rounded-2xl overflow-hidden max-h-60 mb-4 overflow-y-auto">
-                        <table class="w-full text-right text-xs">
-                            <thead class="bg-green-50 text-green-800 font-bold">
-                                <tr><th class="p-3">ناو</th><th class="p-3 text-center">بڕ</th><th class="p-3 text-center">نرخ</th><th class="p-3"></th></tr>
-                            </thead>
-                            <tbody id="cartItems"></tbody>
-                        </table>
-                    </div>
-                    <div class="flex justify-between items-center p-4 bg-slate-900 text-white rounded-2xl">
-                        <h3 class="text-xl font-black">کۆی گشتی: <span id="cartTotal" class="text-green-400">0</span></h3>
-                        <button onclick="printInvoice()" class="bg-green-500 text-white px-8 py-3 rounded-xl font-black shadow-md">چاپی وەسڵ</button>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-5 space-y-6">
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-blue-100">
-                        <h2 class="font-black text-blue-800 border-b pb-2 mb-4"><i class="fas fa-file-invoice ml-2"></i>داخڵکردن</h2>
-                        <div class="grid grid-cols-1 gap-2 text-xs">
-                            <input id="invName" type="text" placeholder="ناوی قایمە" class="p-3 border rounded-xl bg-orange-50 font-bold">
-                            <input id="stBarcode" type="text" placeholder="بارکۆد" class="p-3 border rounded-xl bg-gray-50">
-                            <input id="stName" type="text" placeholder="ناوی دەرمان" class="p-3 border rounded-xl">
-                            <div class="grid grid-cols-2 gap-2">
-                                <select id="stType" class="p-3 border rounded-xl">
-                                    <option value="تابلێت">تابلێت</option><option value="کەپسول">کەپسول</option>
-                                    <option value="شراب">شراب</option><option value="مرهم">مرهم</option>
-                                    <option value="بتڵ">بتڵ</option><option value="امپول">امپول</option>
-                                </select>
-                                <input id="stPackPrice" type="number" placeholder="نرخی پاکەت" class="p-3 border rounded-xl">
-                            </div>
-                            <div class="grid grid-cols-3 gap-2">
-                                <input id="stStrips" type="number" placeholder="شریت" class="p-3 border rounded-xl">
-                                <input id="stQty" type="number" placeholder="بڕ" class="p-3 border rounded-xl">
-                                <input id="stExp" type="date" class="p-3 border rounded-xl text-[10px]">
-                            </div>
-                            <button onclick="saveToStock()" class="w-full bg-blue-800 text-white py-3 rounded-xl font-bold mt-2 shadow">پاشەکەوت لە داتابەیس</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-orange-100">
-                        <h3 class="text-sm font-bold text-orange-800 mb-3">گەڕان لە قایمەکان</h3>
-                        <div class="flex gap-2">
-                            <input id="searchInv" type="text" placeholder="ناوی قایمە بنوسە..." class="flex-1 p-2 border rounded-xl text-xs">
-                            <button onclick="searchInvoice()" class="bg-orange-500 text-white px-4 rounded-xl text-xs font-bold">بگەڕێ</button>
-                        </div>
-                        <div id="searchResults" class="mt-3 space-y-2 max-h-40 overflow-y-auto"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="scannerModal" class="fixed inset-0 bg-black/90 z-[200] hidden flex flex-col items-center justify-center p-4">
-        <div id="reader" class="w-full max-w-md bg-white rounded-2xl overflow-hidden border-4 border-blue-600"></div>
-        <button onclick="stopScanner()" class="mt-6 bg-red-600 text-white px-10 py-3 rounded-full font-bold">داخستن</button>
-    </div>
-
-    <div id="invoice" class="print-only text-right p-6" style="width: 80mm; margin: auto;">
-        <div class="text-center mb-4">
-            <h1 class="text-xl font-black">سەیدەلیەی ڕۆژیار</h1>
-            <p class="text-[10px]">بەحرکە - جوت سایدی گشتی - مزگەوتی مەلا ڕەشید</p>
-            <p class="text-[8px] text-gray-500" id="invDate"></p>
-            <div class="border-b border-dashed my-2"></div>
-        </div>
-        <table class="w-full text-xs mb-4">
-            <tbody id="invBody"></tbody>
-        </table>
-        <div class="border-t border-dashed pt-2 font-black text-lg flex justify-between">
-            <span>کۆی گشتی:</span> <span id="invTotal">0</span>
-        </div>
-    </div>
-
-    <script>
-        const PASSWORDS = { admin: "1998", staff: "2000" };
-        let inventory = [];
-        let cart = [];
-        let html5QrCode;
-
-        function handleLogin() {
-            const role = document.getElementById('userRole').value;
-            const pass = document.getElementById('passField').value;
-            if(pass === PASSWORDS[role]) {
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                if(role === 'admin') document.getElementById('adminStats').classList.remove('hidden');
-                loadData();
-            } else { alert("ڕەمز هەڵەیە!"); }
-        }
-
-        async function loadData() {
-            const { data } = await supabaseClient.from('inventory').select('*');
-            if(data) { inventory = data; updateUI(); }
-        }
-
-        async function saveToStock() {
-            const item = {
-                barcode: document.getElementById('stBarcode').value,
-                name: document.getElementById('stName').value,
-                type: document.getElementById('stType').value,
-                pack_price: Number(document.getElementById('stPackPrice').value),
-                strips_per_pack: Number(document.getElementById('stStrips').value) || 1,
-                total_strips: Number(document.getElementById('stQty').value) * (Number(document.getElementById('stStrips').value) || 1),
-                expiry_date: document.getElementById('stExp').value,
-                invoice_name: document.getElementById('invName').value
-            };
-            const { error } = await supabaseClient.from('inventory').insert([item]);
-            if(!error) { alert("تۆمار کرا"); loadData(); }
-        }
-
-        function updateUI() {
-            const select = document.getElementById('sellSelect');
-            select.innerHTML = "";
-            inventory.forEach(item => {
-                const packs = Math.floor(item.total_strips / item.strips_per_pack);
-                const
+            <button onclick="location.reload()" class="bg-red-500/20 hover:bg-red-500 border border-red-500 text-white px-4 py-2 rounded
