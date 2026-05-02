@@ -22,9 +22,9 @@
     <nav class="bg-blue-900 text-white p-4 shadow-lg flex justify-between items-center no-print sticky top-0 z-50">
         <div>
             <h1 class="text-2xl font-black">سەیدەلیەی ڕۆژیار</h1>
-            <p class="text-xs text-blue-200">بەحرکە - جوت سایدی گشتی</p>
+            <p class="text-xs text-blue-200">بەحرکە - جوت سایدی گشتی - مزگەوتی مەلا ڕەشید</p>
         </div>
-        <button onclick="location.reload()" class="bg-red-600 px-4 py-2 rounded-xl font-bold">دەرچوون</button>
+        <button onclick="location.reload()" class="bg-red-600 px-4 py-2 rounded-xl font-bold hover:bg-red-700 transition">دەرچوون</button>
     </nav>
 
     <div class="container mx-auto p-4 space-y-6 no-print">
@@ -32,65 +32,81 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             <div class="lg:col-span-5 bg-white p-6 rounded-3xl shadow-sm border border-blue-100">
-                <h2 class="text-xl font-bold mb-4 text-blue-800 border-b pb-2"><i class="fas fa-box-open ml-2"></i>داخڵکردنی دەرمان (مەخزەن)</h2>
+                <h2 class="text-xl font-bold mb-4 text-blue-800 border-b pb-2"><i class="fas fa-box-open ml-2"></i>داخڵکردنی دەرمان</h2>
                 <div class="grid grid-cols-1 gap-3">
-                    <input id="stName" type="text" placeholder="ناوی دەرمان" class="p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input id="stName" type="text" placeholder="ناوی دەرمان" class="p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none font-bold">
+                    
+                    <select id="stType" class="p-3 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="" disabled selected>جۆری دەرمان هەڵبژێرە...</option>
+                        <option value="تابلێت">تابلێت (Tablet)</option>
+                        <option value="کەپسول">کەپسول (Capsule)</option>
+                        <option value="سۆفت جێل">سۆفت جێل (Softgel)</option>
+                        <option value="شراب">شراب (Syrup)</option>
+                        <option value="مرهم">مرهم (Ointment)</option>
+                        <option value="کرێم">کرێم (Cream)</option>
+                        <option value="جێل">جێل (Gel)</option>
+                        <option value="بتڵ">بتڵ (Bottle)</option>
+                        <option value="ڤیەل">ڤیەل (Vial)</option>
+                        <option value="امپول">امپول (Ampoule)</option>
+                        <option value="دڵۆپە">دڵۆپە (Drops)</option>
+                        <option value="بۆخاو">بۆخاو (Inhaler)</option>
+                    </select>
+
                     <div class="grid grid-cols-2 gap-2">
                         <input id="stPackPrice" type="number" placeholder="نرخی پاکەت" class="p-3 border rounded-xl">
                         <input id="stStripsPerPack" type="number" placeholder="چەند شریتی تێدایە؟" class="p-3 border rounded-xl">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <input id="stQtyPacks" type="number" placeholder="بڕ (پاکەت)" class="p-3 border rounded-xl bg-blue-50 font-bold">
-                        <input id="stExpiry" type="date" class="p-3 border rounded-xl">
+                        <input id="stExpiry" type="date" class="p-3 border rounded-xl text-xs">
                     </div>
-                    <button onclick="saveToStock()" class="w-full bg-blue-700 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-blue-800 transition">تۆمارکردن لە کۆگا</button>
+                    <button onclick="saveToStock()" class="w-full bg-blue-700 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-blue-800 transition">تۆمارکردن لە کۆگا</button>
                 </div>
             </div>
 
             <div class="lg:col-span-7 bg-white p-6 rounded-3xl shadow-sm border border-green-100">
-                <h2 class="text-xl font-bold mb-4 text-green-800 border-b pb-2"><i class="fas fa-cart-plus ml-2"></i>بەشی فرۆشتن</h2>
+                <h2 class="text-xl font-bold mb-4 text-green-800 border-b pb-2"><i class="fas fa-cart-plus ml-2"></i>فرۆشتن</h2>
                 <div class="flex flex-col md:flex-row gap-4 mb-6">
                     <select id="sellSelect" class="flex-1 p-4 border-2 border-green-200 rounded-2xl bg-gray-50 font-bold outline-none"></select>
                     <div class="flex items-center gap-2">
-                        <label class="font-bold">جۆر:</label>
                         <select id="sellUnit" class="p-4 border-2 border-green-200 rounded-2xl bg-white font-bold">
                             <option value="pack">پاکەت</option>
                             <option value="strip">شریت</option>
                         </select>
                     </div>
                     <input id="sellQty" type="number" value="1" min="1" class="w-20 p-4 border-2 border-green-200 rounded-2xl text-center font-bold">
-                    <button onclick="addToCart()" class="bg-green-600 text-white px-8 py-4 rounded-2xl font-black shadow-lg hover:bg-green-700">زیادکردن</button>
+                    <button onclick="addToCart()" class="bg-green-600 text-white px-8 py-4 rounded-2xl font-black shadow-lg hover:bg-green-700 transition">زیادکردن</button>
                 </div>
 
-                <div class="border rounded-2xl overflow-hidden">
+                <div class="border rounded-2xl overflow-hidden max-h-64 overflow-y-auto">
                     <table class="w-full text-right">
-                        <thead class="bg-green-50">
+                        <thead class="bg-green-50 sticky top-0">
                             <tr>
                                 <th class="p-3">دەرمان</th>
                                 <th class="p-3 text-center">جۆر</th>
-                                <th class="p-3 text-center">عدد</th>
+                                <th class="p-3 text-center">بڕ</th>
                                 <th class="p-3 text-center">نرخ</th>
-                                <th class="p-3 text-center">کردار</th>
+                                <th class="p-3 text-center"></th>
                             </tr>
                         </thead>
                         <tbody id="cartItems"></tbody>
                     </table>
                 </div>
                 <div class="mt-4 flex justify-between items-center p-4 bg-gray-50 rounded-2xl">
-                    <h3 class="text-2xl font-black">کۆی گشتی: <span id="cartTotal" class="text-green-700">0</span> د.ع</h3>
-                    <button onclick="printInvoice()" class="bg-blue-600 text-white px-10 py-3 rounded-xl font-bold shadow-md hover:bg-blue-700">چاپی وەسڵ</button>
+                    <h3 class="text-2xl font-black text-gray-800">کۆی گشتی: <span id="cartTotal" class="text-green-700">0</span> د.ع</h3>
+                    <button onclick="printInvoice()" class="bg-blue-600 text-white px-10 py-3 rounded-xl font-bold shadow-md hover:bg-blue-700 transition">چاپی وەسڵ</button>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-3xl shadow-sm border overflow-hidden">
-            <h2 class="font-bold mb-4 text-gray-700">کۆگای دەرمانخانە</h2>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border">
+            <h2 class="font-bold mb-4 text-gray-700 border-b pb-2">لیستی گشتی کۆگا</h2>
             <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse">
+                <table class="w-full text-right border-collapse text-sm">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th class="p-3 border">ناوی دەرمان</th>
-                            <th class="p-3 border text-center">بڕی ماوە (پاکەت - شریت)</th>
+                            <th class="p-3 border">ناو و جۆر</th>
+                            <th class="p-3 border text-center">بڕی ماوە</th>
                             <th class="p-3 border text-center">نرخی پاکەت</th>
                             <th class="p-3 border text-center">بەسەرچوون</th>
                         </tr>
@@ -109,140 +125,10 @@
             <div class="border-b-2 border-dashed my-2"></div>
         </div>
         <table class="w-full text-sm mb-4">
-            <thead>
-                <tr class="border-b">
-                    <th class="text-right pb-1">ناوو</th>
-                    <th class="text-center pb-1">بڕ</th>
-                    <th class="text-left pb-1">نرخ</th>
-                </tr>
-            </thead>
             <tbody id="invBody"></tbody>
         </table>
         <div class="border-t-2 border-dashed pt-2 font-black text-xl flex justify-between">
             <span>کۆی گشتی:</span>
             <span id="invTotal">0</span>
         </div>
-        <div class="text-center mt-6 text-xs italic">تەندروست بن - شفاؤكم غايتنا</div>
-    </div>
-
-    <script>
-        let inventory = [];
-        let cart = [];
-
-        function saveToStock() {
-            const name = document.getElementById('stName').value;
-            const packPrice = Number(document.getElementById('stPackPrice').value);
-            const stripsPerPack = Number(document.getElementById('stStripsPerPack').value);
-            const packsQty = Number(document.getElementById('stQtyPacks').value);
-            const expiry = document.getElementById('stExpiry').value;
-
-            if(!name || !packPrice) return alert("زانیارییەکان تەواو بکە");
-
-            // بڕی گشتی بە شریت حساب دەکەین بۆ وردی داتاکە
-            const totalStrips = packsQty * stripsPerPack;
-            
-            const item = {
-                id: Date.now(),
-                name, packPrice, stripsPerPack, 
-                totalStrips, expiry,
-                stripPrice: packPrice / stripsPerPack
-            };
-
-            inventory.push(item);
-            updateUI();
-            alert("دەرمانەکە زیادکرا بۆ کۆگا");
-            document.getElementById('stName').value = "";
-        }
-
-        function updateUI() {
-            const select = document.getElementById('sellSelect');
-            const table = document.getElementById('inventoryTable');
-            select.innerHTML = "";
-            table.innerHTML = "";
-
-            inventory.forEach(item => {
-                // نیشاندانی بڕی ماوە بە پاکەت و شریت
-                const packs = Math.floor(item.totalStrips / item.stripsPerPack);
-                const strips = item.totalStrips % item.stripsPerPack;
-
-                select.innerHTML += `<option value="${item.id}">${item.name} (${packs}p, ${strips}s)</option>`;
-                table.innerHTML += `<tr>
-                    <td class="p-3 border font-bold">${item.name}</td>
-                    <td class="p-3 border text-center bg-blue-50">${packs} پاکەت و ${strips} شریت</td>
-                    <td class="p-3 border text-center font-bold">${item.packPrice.toLocaleString()}</td>
-                    <td class="p-3 border text-center text-red-600">${item.expiry}</td>
-                </tr>`;
-            });
-        }
-
-        function addToCart() {
-            const id = document.getElementById('sellSelect').value;
-            const unit = document.getElementById('sellUnit').value;
-            const qty = Number(document.getElementById('sellQty').value);
-            
-            const item = inventory.find(i => i.id == id);
-            if(!item) return;
-
-            let neededStrips = (unit === 'pack') ? (qty * item.stripsPerPack) : qty;
-            
-            if(item.totalStrips < neededStrips) return alert("بڕی پێویست لە کۆگا نییە!");
-
-            const price = (unit === 'pack') ? (item.packPrice * qty) : (item.stripPrice * qty);
-            
-            cart.push({ name: item.name, unit: (unit === 'pack' ? 'پاکەت' : 'شریت'), qty, price, id: item.id, neededStrips });
-            
-            // کەمکردنەوە لە کۆگا
-            item.totalStrips -= neededStrips;
-            
-            updateCartUI();
-            updateUI();
-        }
-
-        function updateCartUI() {
-            const body = document.getElementById('cartItems');
-            let total = 0;
-            body.innerHTML = "";
-            cart.forEach((c, index) => {
-                total += c.price;
-                body.innerHTML += `<tr class="border-b">
-                    <td class="p-3 font-bold">${c.name}</td>
-                    <td class="p-3 text-center">${c.unit}</td>
-                    <td class="p-3 text-center">${c.qty}</td>
-                    <td class="p-3 text-center text-green-700">${c.price.toLocaleString()}</td>
-                    <td class="p-3 text-center"><button onclick="removeFromCart(${index})" class="text-red-500"><i class="fas fa-trash"></i></button></td>
-                </tr>`;
-            });
-            document.getElementById('cartTotal').innerText = total.toLocaleString();
-        }
-
-        function removeFromCart(index) {
-            const item = cart[index];
-            const invItem = inventory.find(i => i.id == item.id);
-            invItem.totalStrips += item.neededStrips;
-            cart.splice(index, 1);
-            updateCartUI();
-            updateUI();
-        }
-
-        function printInvoice() {
-            if(cart.length === 0) return alert("هیچ دەرمانێک نییە بۆ فرۆشتن");
-            const invBody = document.getElementById('invBody');
-            invBody.innerHTML = "";
-            let total = 0;
-            cart.forEach(c => {
-                total += c.price;
-                invBody.innerHTML += `<tr>
-                    <td class="py-1">${c.name} (${c.unit})</td>
-                    <td class="text-center">${c.qty}</td>
-                    <td class="text-left">${c.price.toLocaleString()}</td>
-                </tr>`;
-            });
-            document.getElementById('invTotal').innerText = total.toLocaleString() + " د.ع";
-            document.getElementById('invDate').innerText = new Date().toLocaleString('ku-IQ');
-            window.print();
-            cart = [];
-            updateCartUI();
-        }
-    </script>
-</body>
-</html>
+        <div class="text-center mt-6 text-xs italic">تەندروست بن -
