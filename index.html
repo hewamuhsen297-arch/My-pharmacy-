@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ڕۆژیار - سیستەمی بارکۆد</title>
+    <title>کۆگای ڕۆژیار - وەشانی بارکۆد</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -35,7 +35,7 @@
 
     <div id="loginPage" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-[100] px-4">
         <div class="bg-white p-8 rounded-[2rem] shadow-2xl w-full max-w-sm text-center">
-            <h1 class="text-3xl font-black text-blue-600 mb-6 font-bold">ڕۆژیار</h1>
+            <h1 class="text-3xl font-black text-blue-600 mb-6">سەیدەلیەی ڕۆژیار</h1>
             <input id="passField" type="password" placeholder="ڕەمزی نهێنی" class="w-full border-2 p-4 rounded-2xl text-center mb-4 outline-none font-bold bg-gray-50">
             <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">چوونەژوورەوە</button>
         </div>
@@ -45,35 +45,39 @@
         <nav class="bg-blue-600 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
             <span class="font-black text-lg"><i class="fas fa-barcode ml-2"></i>کۆگای ڕۆژیار</span>
             <div class="flex gap-2">
-                <button onclick="switchTab('report')" class="bg-white/20 px-3 py-1.5 rounded-xl text-xs font-bold">ڕاپۆرت</button>
+                <button onclick="switchTab('report')" class="bg-white/20 px-3 py-1.5 rounded-xl text-xs font-bold font-bold">ڕاپۆرت</button>
                 <button onclick="location.reload()" class="bg-red-500 px-3 py-1.5 rounded-xl text-xs font-bold">دەرچوون</button>
             </div>
         </nav>
 
         <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-            <button onclick="startScanner()" class="bg-blue-600 text-white w-20 h-20 rounded-full shadow-2xl border-4 border-white flex items-center justify-center text-3xl animate-bounce">
+            <button onclick="startScanner()" class="bg-blue-600 text-white w-20 h-20 rounded-full shadow-2xl border-4 border-white flex items-center justify-center text-3xl">
                 <i class="fas fa-camera"></i>
             </button>
         </div>
 
         <div id="inventoryTab" class="tab-content active p-4 max-w-2xl mx-auto space-y-4">
+            
             <div id="scannerUI" class="hidden bg-white p-4 rounded-3xl shadow-xl border-2 border-blue-500 mb-4">
                 <div id="reader" style="width: 100%"></div>
                 <button onclick="stopScanner()" class="w-full mt-2 bg-red-100 text-red-600 py-2 rounded-xl font-bold">داخستنی کامێرا</button>
             </div>
 
-            <input type="text" id="searchInput" onkeyup="searchMedicine()" placeholder="ناوی دەرمان یان بارکۆد..." class="w-full p-4 rounded-2xl shadow-sm border-none outline-none font-bold text-right">
+            <input type="text" id="searchInput" onkeyup="searchMedicine()" placeholder="بگەڕێ بۆ ناو یان بارکۆد..." class="w-full p-4 rounded-2xl shadow-sm border-none outline-none font-bold text-right">
 
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-                <h2 class="font-black text-blue-600 mb-4 border-b pb-2">داخڵکردنی نوێ</h2>
+                <h2 class="font-black text-blue-600 mb-4 border-b pb-2 flex items-center justify-between">
+                    <span>داخڵکردنی دەرمان</span>
+                    <i class="fas fa-plus-circle"></i>
+                </h2>
                 <div class="space-y-3">
-                    <input id="mBarcode" type="text" placeholder="بارکۆد (یان لێرە سکانی بکە)" class="w-full p-3 bg-gray-50 rounded-xl outline-none font-bold border focus:border-blue-400">
+                    <input id="mBarcode" type="text" placeholder="بارکۆد (یان سکانی بکە)" class="w-full p-3 bg-gray-50 rounded-xl outline-none font-bold border focus:border-blue-400">
                     <input id="mName" type="text" placeholder="ناوی دەرمان" class="w-full p-3 bg-gray-50 rounded-xl outline-none font-bold">
                     <div class="grid grid-cols-2 gap-3">
-                        <input id="mPrice" type="number" placeholder="نرخ" class="p-3 bg-gray-50 rounded-xl outline-none font-bold">
-                        <input id="mQty" type="number" placeholder="بڕ (شریت)" class="p-3 bg-gray-50 rounded-xl outline-none font-bold">
+                        <input id="mPrice" type="number" placeholder="نرخی فرۆشتن" class="p-3 bg-gray-50 rounded-xl outline-none font-bold text-center">
+                        <input id="mQty" type="number" placeholder="بڕ (شریت)" class="p-3 bg-gray-50 rounded-xl outline-none font-bold text-center">
                     </div>
-                    <button onclick="addMedicine()" id="addBtn" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black shadow-md">پاشەکەوتکردن</button>
+                    <button onclick="addMedicine()" id="addBtn" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black shadow-md">پاشەکەوتکردن لە کۆگا</button>
                 </div>
             </div>
 
@@ -81,8 +85,10 @@
         </div>
 
         <div id="reportTab" class="tab-content p-4 max-w-2xl mx-auto">
-            <button onclick="switchTab('inventory')" class="mb-4 text-blue-600 font-bold flex items-center bg-blue-50 p-3 rounded-2xl"><i class="fas fa-arrow-right ml-2"></i>گەڕانەوە</button>
-            <div id="salesList" class="bg-white p-6 rounded-[2rem] shadow-sm space-y-4"></div>
+            <button onclick="switchTab('inventory')" class="mb-4 text-blue-600 font-bold flex items-center bg-blue-50 p-3 rounded-2xl inline-block">
+                <i class="fas fa-arrow-right ml-2"></i> گەڕانەوە بۆ لیست
+            </button>
+            <div id="salesList" class="bg-white p-6 rounded-[2rem] shadow-sm space-y-4 font-bold"></div>
         </div>
     </div>
 
@@ -104,7 +110,7 @@
             if(t === 'report') loadSales();
         }
 
-        // --- SCANNER LOGIC ---
+        // --- SCANNER ---
         function startScanner() {
             document.getElementById('scannerUI').classList.remove('hidden');
             html5QrCode = new Html5Qrcode("reader");
@@ -112,7 +118,7 @@
                 { facingMode: "environment" }, 
                 { fps: 10, qrbox: { width: 250, height: 150 } },
                 onScanSuccess
-            );
+            ).catch(err => alert("کامێرا نەکرایەوە: " + err));
         }
 
         function stopScanner() {
@@ -125,26 +131,25 @@
 
         function onScanSuccess(decodedText) {
             stopScanner();
-            // بگەڕێ بزانە ئەم بارکۆدە پێشتر هەبووە؟
             const item = allMedicines.find(m => m.barcode === decodedText);
             if(item) {
-                // ئەگەر هەبوو، یەکسەر بیفرۆشە
+                // ئەگەر دەرمانەکە هەبوو، یەکسەر دەچێتە بەشی فرۆشتن
                 sell(item.id, item.name, item.qty, item.price);
             } else {
-                // ئەگەر نەبوو، بارکۆدەکە بخە ناو خانەی داخڵکردن
+                // ئەگەر دەرمانەکە نوێ بوو، بارکۆدەکە دادەنێت بۆ سەیڤکردن
                 document.getElementById('mBarcode').value = decodedText;
-                alert("ئەم بارکۆدە نوێیە، تکایە ناوی دەرمانەکە بنووسە و سەیڤی بکە.");
+                alert("ئەم بارکۆدە نوێیە، ناوی بنووسە بۆ پاشەکەوتکردن");
             }
         }
 
-        // --- DATABASE LOGIC ---
+        // --- DATABASE ---
         async function addMedicine() {
             const b = document.getElementById('mBarcode').value;
             const n = document.getElementById('mName').value;
             const p = parseFloat(document.getElementById('mPrice').value);
             const q = parseInt(document.getElementById('mQty').value);
 
-            if(!b || !n || !p || !q) return alert("هەموو زانیارییەکان پڕ بکەرەوە");
+            if(!b || !n || isNaN(p) || isNaN(q)) return alert("تکایە هەموو خانەکان پڕ بکەرەوە");
 
             await db.collection("inventory").add({
                 barcode: b, name: n, price: p, qty: q, createdAt: new Date()
@@ -165,27 +170,35 @@
         function render(data) {
             const div = document.getElementById('medicineList'); div.innerHTML = "";
             data.forEach(item => {
+                const isLow = item.qty < 5;
                 div.innerHTML += `
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border-r-8 border-blue-500 flex justify-between items-center">
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border-r-8 ${isLow ? 'border-red-500' : 'border-blue-500'} flex justify-between items-center">
                         <div class="flex-1">
                             <div class="font-black text-slate-800 text-lg">${item.name}</div>
-                            <div class="text-xs font-bold text-gray-400">ID: ${item.barcode}</div>
+                            <div class="text-[10px] text-gray-400 font-bold">${item.barcode}</div>
                             <div class="flex gap-4 mt-1 text-sm font-bold">
-                                <span class="${item.qty < 5 ? 'text-red-500' : 'text-gray-500'}">ماوە: ${item.qty}</span>
-                                <span class="text-green-600">${item.price} دینار</span>
+                                <span class="${isLow ? 'text-red-500' : 'text-gray-500'}">ماوە: ${item.qty}</span>
+                                <span class="text-green-600">${item.price.toLocaleString()} د.ع</span>
                             </div>
                         </div>
-                        <button onclick="sell('${item.id}', '${item.name}', ${item.qty}, ${item.price})" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black shadow-md">Sale</button>
+                        <div class="flex gap-2">
+                            <button onclick="sell('${item.id}', '${item.name}', ${item.qty}, ${item.price})" class="bg-blue-600 text-white px-5 py-2.5 rounded-2xl font-black shadow-md active:scale-95 transition-all">Sale</button>
+                            <button onclick="deleteItem('${item.id}')" class="text-gray-200 p-2"><i class="fas fa-trash"></i></button>
+                        </div>
                     </div>`;
             });
         }
 
         async function sell(id, n, q, p) {
             if(q <= 0) return alert("لە کۆگا نەماوە!");
-            await db.collection("inventory").doc(id).update({ qty: q - 1 });
-            await db.collection("sales").add({ name: n, price: p, date: new Date() });
-            alert(`فرۆشرا: ${n} ✅`);
+            if(confirm(`فرۆشتنی ١ دانە لە ${n}؟`)) {
+                await db.collection("inventory").doc(id).update({ qty: q - 1 });
+                await db.collection("sales").add({ name: n, price: p, date: new Date() });
+                alert("بە سەرکەوتوویی فرۆشرا ✅");
+            }
         }
+
+        async function deleteItem(id) { if(confirm("بیسڕمەوە؟")) await db.collection("inventory").doc(id).delete(); }
 
         function searchMedicine() {
             const t = document.getElementById('searchInput').value.toLowerCase();
@@ -193,16 +206,16 @@
         }
 
         function loadSales() {
-            const div = document.getElementById('salesList'); div.innerHTML = "باردەکرێت...";
+            const div = document.getElementById('salesList'); div.innerHTML = "چاوەڕوانبە...";
             const today = new Date(new Date().setHours(0,0,0,0));
             db.collection("sales").where("date", ">=", today).get().then(snap => {
-                div.innerHTML = "<h2 class='font-black text-xl border-b pb-3'>فرۆشتنی ئەمڕۆ</h2>";
+                div.innerHTML = "<h2 class='font-black text-xl text-blue-600 border-b pb-3 mb-4'>ڕاپۆرتی فرۆشتنی ئەمڕۆ</h2>";
                 let total = 0;
                 snap.forEach(doc => {
                     const s = doc.data(); total += s.price;
-                    div.innerHTML += `<div class='flex justify-between py-2 border-b text-sm font-bold'><span>${s.name}</span><span>${s.price} دینار</span></div>`;
+                    div.innerHTML += `<div class='flex justify-between py-2 border-b'><span>${s.name}</span><span class='text-blue-600'>${s.price.toLocaleString()}</span></div>`;
                 });
-                div.innerHTML += `<div class='mt-6 p-4 bg-blue-600 rounded-2xl text-white text-center font-black text-xl'>کۆی گشتی: ${total.toLocaleString()} د.ع</div>`;
+                div.innerHTML += `<div class='mt-6 p-5 bg-blue-600 rounded-2xl text-white text-center font-black text-xl shadow-lg'>کۆی گشتی: ${total.toLocaleString()} د.ع</div>`;
             });
         }
     </script>
