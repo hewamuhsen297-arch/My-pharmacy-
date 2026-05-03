@@ -143,4 +143,63 @@
                 const isLow = item.qty < 5;
 
                 div.innerHTML += `
-                    <div class="card-anim bg-white p-5 rounded-3xl shadow-sm border
+                    <div class="card-anim bg-white p-5 rounded-3xl shadow-sm border-r-8 ${isExpiring ? 'border-orange-500' : 'border-blue-500'} flex justify-between items-center">
+                        <div class="flex-1">
+                            <div class="font-black text-slate-800 text-lg">${item.name}</div>
+                            <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs font-bold">
+                                <span class="${isLow ? 'text-red-600' : 'text-gray-500'}"><i class="fas fa-box ml-1"></i>بڕ: ${item.qty}</span>
+                                <span class="text-green-600"><i class="fas fa-tag ml-1"></i>${item.price} د.ع</span>
+                                <span class="${isExpiring ? 'text-orange-600 animate-pulse' : 'text-gray-400'}">
+                                    <i class="fas fa-calendar-alt ml-1"></i>بەسەرچوون: ${item.expiry}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="sell('${item.id}', '${item.name}', ${item.qty}, ${item.price})" class="bg-blue-600 text-white px-5 py-2.5 rounded-2xl font-black text-sm shadow-md active:bg-blue-800">Sale</button>
+                            <button onclick="deleteItem('${item.id}')" class="text-gray-300 p-2"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        async function sell(id, n, q, p) {
+            if(q <= 0) return alert("ئەم دەرمانە تەواو بووە!");
+            if(confirm(`فرۆشتنی ١ شریت لە ${n}؟`)) {
+                await db.collection("inventory").doc(id).update({ qty: q - 1 });
+                await db.collection("sales").add({ name: n, price: p, date: new Date() });
+            }
+        }
+
+        async function deleteItem(id) { if(confirm("دڵنیای لە سڕینەوە؟")) await db.collection("inventory").doc(id).delete(); }
+
+        function searchMedicine() {
+            const t = document.getElementById('searchInput').value.toLowerCase();
+            render(allMedicines.filter(m => m.name.toLowerCase().includes(t)));
+        }
+
+        function loadSales() {
+            const div = document.getElementById('salesList'); div.innerHTML = "<p class='text-center'>باردەکرێت...</p>";
+            const todayStart = new Date(new Date().setHours(0,0,0,0));
+
+            db.collection("sales").where("date", ">=", todayStart).get().then(snap => {
+                div.innerHTML = "<h2 class='font-black text-xl text-slate-800 border-b pb-3 mb-4'><i class='fas fa-file-invoice-dollar ml-2 text-blue-600'></i>فرۆشتنی ئەمڕۆ</h2>";
+                let total = 0;
+                if(snap.empty) div.innerHTML += "<p class='text-center text-gray-400 py-4 font-bold'>هێشتا هیچ فرۆشتنێک نییە</p>";
+                snap.forEach(doc => {
+                    const s = doc.data(); total += s.price;
+                    div.innerHTML += `
+                        <div class='flex justify-between items-center bg-gray-50 p-3 rounded-xl border-l-4 border-green-500'>
+                            <span class='font-bold text-slate-700'>${s.name}</span>
+                            <span class='font-black text-blue-600'>${s.price.toLocaleString()} د.ع</span>
+                        </div>`;
+                });
+                div.innerHTML += `
+                    <div class='mt-6 p-6 bg-blue-600 rounded-2xl text-white shadow-xl'>
+                        <div class='text-sm opacity-80 mb-1 font-bold'>کۆی گشتی داهات</div>
+                        <div class='text-3xl font-black'>${total.toLocaleString()} <span class='text-sm'>دیناری عێراقی</span></div>
+                    </div>`;
+            });
+        }
+    </script>
+</body>
+</html>
