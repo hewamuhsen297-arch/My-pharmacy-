@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سەیدەلیەی ڕۆژیار - وەشانی پرۆ</title>
+    <title>ڕۆژیار - سیستەمی بارکۆد</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700;900&display=swap');
         body { font-family: 'Noto Sans Arabic', sans-serif; background-color: #f1f5f9; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .card-anim { transition: all 0.2s ease; }
-        .card-anim:active { transform: scale(0.98); }
+        #reader { border-radius: 20px; overflow: hidden; border: none !important; }
     </style>
 </head>
 <body>
@@ -34,61 +34,61 @@
     </script>
 
     <div id="loginPage" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-[100] px-4">
-        <div class="bg-white p-8 rounded-[2rem] shadow-2xl w-full max-w-sm text-center border-b-8 border-blue-600">
-            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600 text-3xl">
-                <i class="fas fa-user-md"></i>
-            </div>
-            <h1 class="text-2xl font-black text-slate-800 mb-6">چوونەژوورەوەی ڕۆژیار</h1>
-            <input id="passField" type="password" placeholder="ڕەمزی نهێنی" class="w-full border-2 p-4 rounded-2xl text-center mb-4 outline-none focus:border-blue-500 font-bold text-lg bg-gray-50">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg active:bg-blue-800 transition-all">چوونەژوورەوە</button>
+        <div class="bg-white p-8 rounded-[2rem] shadow-2xl w-full max-w-sm text-center">
+            <h1 class="text-3xl font-black text-blue-600 mb-6 font-bold">ڕۆژیار</h1>
+            <input id="passField" type="password" placeholder="ڕەمزی نهێنی" class="w-full border-2 p-4 rounded-2xl text-center mb-4 outline-none font-bold bg-gray-50">
+            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">چوونەژوورەوە</button>
         </div>
     </div>
 
     <div id="mainApp" class="hidden min-h-screen">
-        <nav class="bg-blue-600 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-md">
-            <div class="flex items-center gap-2">
-                <i class="fas fa-pills text-xl"></i>
-                <span class="font-black text-lg">کۆگای ڕۆژیار</span>
-            </div>
+        <nav class="bg-blue-600 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
+            <span class="font-black text-lg"><i class="fas fa-barcode ml-2"></i>کۆگای ڕۆژیار</span>
             <div class="flex gap-2">
-                <button onclick="switchTab('report')" class="bg-white/20 px-3 py-1.5 rounded-xl text-xs font-bold"><i class="fas fa-chart-line ml-1"></i>ڕاپۆرت</button>
+                <button onclick="switchTab('report')" class="bg-white/20 px-3 py-1.5 rounded-xl text-xs font-bold">ڕاپۆرت</button>
                 <button onclick="location.reload()" class="bg-red-500 px-3 py-1.5 rounded-xl text-xs font-bold">دەرچوون</button>
             </div>
         </nav>
 
+        <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+            <button onclick="startScanner()" class="bg-blue-600 text-white w-20 h-20 rounded-full shadow-2xl border-4 border-white flex items-center justify-center text-3xl animate-bounce">
+                <i class="fas fa-camera"></i>
+            </button>
+        </div>
+
         <div id="inventoryTab" class="tab-content active p-4 max-w-2xl mx-auto space-y-4">
-            <div class="relative group">
-                <input type="text" id="searchInput" onkeyup="searchMedicine()" placeholder="ناوی دەرمان بنووسە..." class="w-full p-4 pr-12 rounded-2xl shadow-sm border-2 border-transparent focus:border-blue-400 outline-none font-bold text-right transition-all">
-                <i class="fas fa-search absolute right-4 top-5 text-gray-400"></i>
+            <div id="scannerUI" class="hidden bg-white p-4 rounded-3xl shadow-xl border-2 border-blue-500 mb-4">
+                <div id="reader" style="width: 100%"></div>
+                <button onclick="stopScanner()" class="w-full mt-2 bg-red-100 text-red-600 py-2 rounded-xl font-bold">داخستنی کامێرا</button>
             </div>
 
+            <input type="text" id="searchInput" onkeyup="searchMedicine()" placeholder="ناوی دەرمان یان بارکۆد..." class="w-full p-4 rounded-2xl shadow-sm border-none outline-none font-bold text-right">
+
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-                <h2 class="font-black text-blue-600 mb-4 flex items-center"><i class="fas fa-plus-circle ml-2"></i>تۆمارکردنی نوێ</h2>
+                <h2 class="font-black text-blue-600 mb-4 border-b pb-2">داخڵکردنی نوێ</h2>
                 <div class="space-y-3">
-                    <input id="mName" type="text" placeholder="ناوی دەرمان" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold">
+                    <input id="mBarcode" type="text" placeholder="بارکۆد (یان لێرە سکانی بکە)" class="w-full p-3 bg-gray-50 rounded-xl outline-none font-bold border focus:border-blue-400">
+                    <input id="mName" type="text" placeholder="ناوی دەرمان" class="w-full p-3 bg-gray-50 rounded-xl outline-none font-bold">
                     <div class="grid grid-cols-2 gap-3">
-                        <input id="mPrice" type="number" placeholder="نرخی فرۆشتن" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold">
-                        <input id="mQty" type="number" placeholder="بڕ (شریت)" class="p-4 bg-gray-50 rounded-2xl outline-none font-bold">
+                        <input id="mPrice" type="number" placeholder="نرخ" class="p-3 bg-gray-50 rounded-xl outline-none font-bold">
+                        <input id="mQty" type="number" placeholder="بڕ (شریت)" class="p-3 bg-gray-50 rounded-xl outline-none font-bold">
                     </div>
-                    <div class="flex items-center bg-gray-50 rounded-2xl p-4">
-                        <span class="text-gray-500 font-bold ml-2 text-sm">بەسەرچوون:</span>
-                        <input id="mExpiry" type="date" class="bg-transparent outline-none font-bold flex-1 text-blue-600">
-                    </div>
-                    <button onclick="addMedicine()" id="addBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-md">پاشەکەوتکردن</button>
+                    <button onclick="addMedicine()" id="addBtn" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black shadow-md">پاشەکەوتکردن</button>
                 </div>
             </div>
 
-            <div id="medicineList" class="space-y-3 pb-24"></div>
+            <div id="medicineList" class="space-y-3 pb-32"></div>
         </div>
 
         <div id="reportTab" class="tab-content p-4 max-w-2xl mx-auto">
-            <button onclick="switchTab('inventory')" class="mb-6 text-blue-600 font-bold flex items-center bg-blue-50 p-3 rounded-2xl inline-block"><i class="fas fa-arrow-right ml-2"></i>گەڕانەوە بۆ کۆگا</button>
+            <button onclick="switchTab('inventory')" class="mb-4 text-blue-600 font-bold flex items-center bg-blue-50 p-3 rounded-2xl"><i class="fas fa-arrow-right ml-2"></i>گەڕانەوە</button>
             <div id="salesList" class="bg-white p-6 rounded-[2rem] shadow-sm space-y-4"></div>
         </div>
     </div>
 
     <script>
         let allMedicines = [];
+        let html5QrCode;
 
         function handleLogin() {
             if(document.getElementById('passField').value === "1998") {
@@ -104,24 +104,54 @@
             if(t === 'report') loadSales();
         }
 
+        // --- SCANNER LOGIC ---
+        function startScanner() {
+            document.getElementById('scannerUI').classList.remove('hidden');
+            html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                { fps: 10, qrbox: { width: 250, height: 150 } },
+                onScanSuccess
+            );
+        }
+
+        function stopScanner() {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    document.getElementById('scannerUI').classList.add('hidden');
+                });
+            }
+        }
+
+        function onScanSuccess(decodedText) {
+            stopScanner();
+            // بگەڕێ بزانە ئەم بارکۆدە پێشتر هەبووە؟
+            const item = allMedicines.find(m => m.barcode === decodedText);
+            if(item) {
+                // ئەگەر هەبوو، یەکسەر بیفرۆشە
+                sell(item.id, item.name, item.qty, item.price);
+            } else {
+                // ئەگەر نەبوو، بارکۆدەکە بخە ناو خانەی داخڵکردن
+                document.getElementById('mBarcode').value = decodedText;
+                alert("ئەم بارکۆدە نوێیە، تکایە ناوی دەرمانەکە بنووسە و سەیڤی بکە.");
+            }
+        }
+
+        // --- DATABASE LOGIC ---
         async function addMedicine() {
+            const b = document.getElementById('mBarcode').value;
             const n = document.getElementById('mName').value;
             const p = parseFloat(document.getElementById('mPrice').value);
             const q = parseInt(document.getElementById('mQty').value);
-            const e = document.getElementById('mExpiry').value;
 
-            if(!n || !p || !q || !e) return alert("تکایە هەموو زانیارییەکان پڕ بکەرەوە");
-
-            const btn = document.getElementById('addBtn');
-            btn.disabled = true; btn.innerText = "خەریکە تۆمار دەبێت...";
+            if(!b || !n || !p || !q) return alert("هەموو زانیارییەکان پڕ بکەرەوە");
 
             await db.collection("inventory").add({
-                name: n, price: p, qty: q, expiry: e, createdAt: new Date()
+                barcode: b, name: n, price: p, qty: q, createdAt: new Date()
             });
 
-            document.getElementById('mName').value = ""; document.getElementById('mPrice').value = "";
-            document.getElementById('mQty').value = ""; document.getElementById('mExpiry').value = "";
-            btn.disabled = false; btn.innerText = "پاشەکەوتکردن";
+            document.getElementById('mBarcode').value = ""; document.getElementById('mName').value = "";
+            document.getElementById('mPrice').value = ""; document.getElementById('mQty').value = "";
         }
 
         function loadData() {
@@ -134,70 +164,45 @@
 
         function render(data) {
             const div = document.getElementById('medicineList'); div.innerHTML = "";
-            const today = new Date();
-
             data.forEach(item => {
-                const expDate = new Date(item.expiry);
-                const diffMonths = (expDate - today) / (1000 * 60 * 60 * 24 * 30);
-                const isExpiring = diffMonths < 3;
-                const isLow = item.qty < 5;
-
                 div.innerHTML += `
-                    <div class="card-anim bg-white p-5 rounded-3xl shadow-sm border-r-8 ${isExpiring ? 'border-orange-500' : 'border-blue-500'} flex justify-between items-center">
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border-r-8 border-blue-500 flex justify-between items-center">
                         <div class="flex-1">
                             <div class="font-black text-slate-800 text-lg">${item.name}</div>
-                            <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs font-bold">
-                                <span class="${isLow ? 'text-red-600' : 'text-gray-500'}"><i class="fas fa-box ml-1"></i>بڕ: ${item.qty}</span>
-                                <span class="text-green-600"><i class="fas fa-tag ml-1"></i>${item.price} د.ع</span>
-                                <span class="${isExpiring ? 'text-orange-600 animate-pulse' : 'text-gray-400'}">
-                                    <i class="fas fa-calendar-alt ml-1"></i>بەسەرچوون: ${item.expiry}
-                                </span>
+                            <div class="text-xs font-bold text-gray-400">ID: ${item.barcode}</div>
+                            <div class="flex gap-4 mt-1 text-sm font-bold">
+                                <span class="${item.qty < 5 ? 'text-red-500' : 'text-gray-500'}">ماوە: ${item.qty}</span>
+                                <span class="text-green-600">${item.price} دینار</span>
                             </div>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="sell('${item.id}', '${item.name}', ${item.qty}, ${item.price})" class="bg-blue-600 text-white px-5 py-2.5 rounded-2xl font-black text-sm shadow-md active:bg-blue-800">Sale</button>
-                            <button onclick="deleteItem('${item.id}')" class="text-gray-300 p-2"><i class="fas fa-trash"></i></button>
-                        </div>
+                        <button onclick="sell('${item.id}', '${item.name}', ${item.qty}, ${item.price})" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black shadow-md">Sale</button>
                     </div>`;
             });
         }
 
         async function sell(id, n, q, p) {
-            if(q <= 0) return alert("ئەم دەرمانە تەواو بووە!");
-            if(confirm(`فرۆشتنی ١ شریت لە ${n}؟`)) {
-                await db.collection("inventory").doc(id).update({ qty: q - 1 });
-                await db.collection("sales").add({ name: n, price: p, date: new Date() });
-            }
+            if(q <= 0) return alert("لە کۆگا نەماوە!");
+            await db.collection("inventory").doc(id).update({ qty: q - 1 });
+            await db.collection("sales").add({ name: n, price: p, date: new Date() });
+            alert(`فرۆشرا: ${n} ✅`);
         }
-
-        async function deleteItem(id) { if(confirm("دڵنیای لە سڕینەوە؟")) await db.collection("inventory").doc(id).delete(); }
 
         function searchMedicine() {
             const t = document.getElementById('searchInput').value.toLowerCase();
-            render(allMedicines.filter(m => m.name.toLowerCase().includes(t)));
+            render(allMedicines.filter(m => m.name.toLowerCase().includes(t) || m.barcode.includes(t)));
         }
 
         function loadSales() {
-            const div = document.getElementById('salesList'); div.innerHTML = "<p class='text-center'>باردەکرێت...</p>";
-            const todayStart = new Date(new Date().setHours(0,0,0,0));
-
-            db.collection("sales").where("date", ">=", todayStart).get().then(snap => {
-                div.innerHTML = "<h2 class='font-black text-xl text-slate-800 border-b pb-3 mb-4'><i class='fas fa-file-invoice-dollar ml-2 text-blue-600'></i>فرۆشتنی ئەمڕۆ</h2>";
+            const div = document.getElementById('salesList'); div.innerHTML = "باردەکرێت...";
+            const today = new Date(new Date().setHours(0,0,0,0));
+            db.collection("sales").where("date", ">=", today).get().then(snap => {
+                div.innerHTML = "<h2 class='font-black text-xl border-b pb-3'>فرۆشتنی ئەمڕۆ</h2>";
                 let total = 0;
-                if(snap.empty) div.innerHTML += "<p class='text-center text-gray-400 py-4 font-bold'>هێشتا هیچ فرۆشتنێک نییە</p>";
                 snap.forEach(doc => {
                     const s = doc.data(); total += s.price;
-                    div.innerHTML += `
-                        <div class='flex justify-between items-center bg-gray-50 p-3 rounded-xl border-l-4 border-green-500'>
-                            <span class='font-bold text-slate-700'>${s.name}</span>
-                            <span class='font-black text-blue-600'>${s.price.toLocaleString()} د.ع</span>
-                        </div>`;
+                    div.innerHTML += `<div class='flex justify-between py-2 border-b text-sm font-bold'><span>${s.name}</span><span>${s.price} دینار</span></div>`;
                 });
-                div.innerHTML += `
-                    <div class='mt-6 p-6 bg-blue-600 rounded-2xl text-white shadow-xl'>
-                        <div class='text-sm opacity-80 mb-1 font-bold'>کۆی گشتی داهات</div>
-                        <div class='text-3xl font-black'>${total.toLocaleString()} <span class='text-sm'>دیناری عێراقی</span></div>
-                    </div>`;
+                div.innerHTML += `<div class='mt-6 p-4 bg-blue-600 rounded-2xl text-white text-center font-black text-xl'>کۆی گشتی: ${total.toLocaleString()} د.ع</div>`;
             });
         }
     </script>
