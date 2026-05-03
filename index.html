@@ -15,7 +15,7 @@
 <body class="bg-slate-50">
 
     <script>
-        // Firebase Config - زانیارییە نوێیەکانی تۆ
+        // Firebase Config - بە زانیارییە نوێیەکانی تۆ
         const firebaseConfig = {
             apiKey: "AIzaSyArrrDsEpvnQhi3SFsEcQagVdlBbXMuqVE",
             authDomain: "rozhyar--pharmacy.firebaseapp.com",
@@ -26,17 +26,16 @@
             measurementId: "G-2BL63CLH46"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
     </script>
 
-    <div id="loginPage" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[100] px-4 text-right">
+    <div id="loginPage" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[100] px-4">
         <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center border-t-8 border-blue-600">
-            <h1 class="text-3xl font-black text-blue-600 mb-2">سەیدەلیەی ڕۆژیار</h1>
-            <p class="text-sm text-gray-500 mb-8 font-bold">بەحرکە - نزیک مزگەوتی مەلا ڕەشید</p>
+            <h1 class="text-3xl font-black text-blue-600 mb-2 font-bold">سەیدەلیەی ڕۆژیار</h1>
+            <p class="text-sm text-gray-500 mb-8 font-bold text-center">بەحرکە - نزیک مزگەوتی مەلا ڕەشید</p>
             <div class="space-y-4">
-                <select id="userRole" class="w-full border-2 border-gray-100 p-4 rounded-2xl bg-gray-50 font-bold outline-none">
+                <select id="userRole" class="w-full border-2 border-gray-100 p-4 rounded-2xl bg-gray-50 font-bold outline-none text-right">
                     <option value="admin">بەڕێوبەر (Admin)</option>
                     <option value="staff">کارمەند (Staff)</option>
                 </select>
@@ -49,11 +48,11 @@
     <div id="mainApp" class="hidden">
         <nav class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-xl">
              <h1 class="text-xl font-black">کۆگای ڕۆژیار</h1>
-             <button onclick="location.reload()" class="bg-red-500 px-4 py-2 rounded-xl text-xs font-bold">دەرچوون</button>
+             <button onclick="location.reload()" class="bg-red-500 px-4 py-2 rounded-xl text-xs font-bold font-bold">دەرچوون</button>
         </nav>
-        <div class="p-10 text-center font-bold text-xl text-slate-800">
-            <div class="bg-green-100 text-green-700 p-4 rounded-2xl mb-5">سیستمەکە چالاکە! ✅</div>
-            <p>بەخێربێیت، بەستنەوە بە Firebase سەرکەوتوو بوو.</p>
+        <div class="p-10 text-center font-bold text-xl">
+            <div class="bg-green-100 text-green-700 p-4 rounded-2xl mb-5 font-bold">بەستنەوە بە Firebase سەرکەوتوو بوو! ✅</div>
+            <p>ئێستا دەتوانیت دەست بکەیت بە بەڕێوبەرایەتی کۆگا.</p>
         </div>
     </div>
 
