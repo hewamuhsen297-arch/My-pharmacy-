@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ڕۆژیار PRO - گەڕانی فرۆشتن</title>
+    <title>ڕۆژیار PRO - Settings</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -11,15 +11,19 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700;900&display=swap');
-        body { font-family: 'Noto Sans Arabic', sans-serif; background-color: #f8fafc; padding-bottom: 90px; }
+        :root { --main-color: #2563eb; }
+        body { font-family: 'Noto Sans Arabic', sans-serif; background-color: #f8fafc; padding-bottom: 90px; transition: 0.3s; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .nav-btn.active { color: #2563eb; transform: translateY(-3px); }
+        .nav-btn.active { color: var(--main-color); transform: translateY(-3px); }
+        .bg-main { background-color: var(--main-color) !important; }
+        .text-main { color: var(--main-color) !important; }
+        .border-main { border-color: var(--main-color) !important; }
         #reader { border-radius: 20px; overflow: hidden; }
         @media print {
             body * { visibility: hidden; }
             #receiptPrint, #receiptPrint * { visibility: visible; }
-            #receiptPrint { position: absolute; left: 0; top: 0; width: 100%; text-align: center; color: black !important; }
+            #receiptPrint { position: absolute; left: 0; top: 0; width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -40,10 +44,10 @@
     </script>
 
     <div id="loginPage" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[100] px-4">
-        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-sm text-center border-t-8 border-blue-600">
-            <h1 class="text-3xl font-black text-blue-600 mb-6">ڕۆژیار PRO</h1>
-            <input id="passField" type="password" placeholder="ڕەمز" class="w-full border-2 p-4 rounded-2xl text-center mb-4 outline-none font-bold bg-gray-50 focus:border-blue-600">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-xl">چوونەژوورەوە</button>
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-sm text-center border-t-8 border-main">
+            <h1 class="text-3xl font-black text-main mb-6">ڕۆژیار PRO</h1>
+            <input id="passField" type="password" placeholder="ڕەمز بنووسە" class="w-full border-2 p-4 rounded-2xl text-center mb-4 outline-none font-bold bg-gray-50 focus:border-main text-lg">
+            <button onclick="handleLogin()" class="w-full bg-main text-white py-4 rounded-2xl font-black text-xl shadow-lg">چوونەژوورەوە</button>
         </div>
     </div>
 
@@ -53,172 +57,160 @@
                 <i class="fas fa-boxes text-2xl"></i><span class="text-[10px] font-black mt-1">کۆگا</span>
             </button>
             <button onclick="switchTab('sales')" id="btn-sales" class="nav-btn flex flex-col items-center text-gray-400">
-                <i class="fas fa-shopping-cart text-2xl"></i><span class="text-[10px] font-black mt-1">فرۆشتن</span>
+                <i class="fas fa-cash-register text-2xl"></i><span class="text-[10px] font-black mt-1">فرۆشتن</span>
             </button>
-            <button onclick="switchTab('report')" id="btn-report" class="nav-btn flex flex-col items-center text-gray-400">
-                <i class="fas fa-calendar-alt text-2xl"></i><span class="text-[10px] font-black mt-1">ڕاپۆرت</span>
+            <button id="nav-report" onclick="switchTab('report')" class="nav-btn flex flex-col items-center text-gray-400">
+                <i class="fas fa-chart-bar text-2xl"></i><span class="text-[10px] font-black mt-1">ڕاپۆرت</span>
+            </button>
+            <button id="nav-settings" onclick="switchTab('settings')" class="nav-btn flex flex-col items-center text-gray-400">
+                <i class="fas fa-cog text-2xl"></i><span class="text-[10px] font-black mt-1">ڕێکخستن</span>
             </button>
         </nav>
 
         <div id="inventoryTab" class="tab-content active p-4 max-w-2xl mx-auto space-y-4">
-            <div class="flex justify-between items-center bg-blue-600 p-5 rounded-[2rem] text-white shadow-lg">
-                <h2 class="font-black text-lg">بەڕێوەبردنی کۆگا</h2>
-                <button onclick="startScanner('inv')" class="bg-white/20 p-3 rounded-2xl"><i class="fas fa-barcode text-xl"></i></button>
+            <div class="bg-main flex justify-between items-center p-5 rounded-[2rem] text-white shadow-lg">
+                <h2 class="font-black">کۆگای دەرمان</h2>
+                <button onclick="startScanner('inv')" class="bg-white/20 p-3 rounded-2xl"><i class="fas fa-barcode"></i></button>
             </div>
-
-            <div id="scannerUI" class="hidden rounded-3xl overflow-hidden border-4 border-blue-500 shadow-2xl relative h-64 bg-black">
-                <div id="reader"></div>
-                <button onclick="stopScanner()" class="absolute top-2 right-2 bg-red-500 text-white w-10 h-10 rounded-full z-10">X</button>
-            </div>
-
+            <div id="scannerUI" class="hidden rounded-3xl border-4 border-main overflow-hidden h-64 bg-black relative"><div id="reader"></div></div>
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border space-y-3">
-                <input id="mBarcode" type="text" placeholder="بارکۆد" class="w-full p-3 bg-gray-50 rounded-xl border outline-none font-bold">
-                <input id="mName" type="text" placeholder="ناوی دەرمان" class="w-full p-3 bg-gray-50 rounded-xl border outline-none font-bold">
-                
-                <select id="mType" class="w-full p-3 bg-gray-50 rounded-xl border outline-none font-bold text-blue-600">
-                    <option value="تابلێت">تابلێت (Tablet)</option>
-                    <option value="کەپسول">کەپسول (Capsule)</option>
-                    <option value="شیر">شیر (Milk)</option>
-                    <option value="مەرهەم">مەرهەم (Ointment)</option>
-                    <option value="بتڵ">بتڵ (Bottle)</option>
-                    <option value="سۆفت جێل">سۆفت جێل</option>
-                    <option value="ئینهالەیەر">ئینهالەیەر</option>
-                    <option value="ئامپول">ئامپول</option>
-                    <option value="ڤیەل">ڤیەل</option>
+                <input id="mBarcode" type="text" placeholder="بارکۆد" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
+                <input id="mName" type="text" placeholder="ناوی دەرمان" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
+                <select id="mType" class="w-full p-3 bg-gray-50 border rounded-xl outline-none text-main">
+                    <option value="تابلێت">Tablet</option><option value="کەپسول">Capsule</option><option value="شیر">Milk</option>
+                    <option value="مەرهەم">Ointment</option><option value="بتڵ">Bottle</option>
                 </select>
-
                 <div class="grid grid-cols-2 gap-3">
-                    <input id="mPrice" type="number" placeholder="نرخی فرۆشتن" class="p-3 bg-gray-50 rounded-xl border outline-none font-bold text-center">
-                    <input id="mQty" type="number" placeholder="بڕ" class="p-3 bg-gray-50 rounded-xl border outline-none font-bold text-center">
+                    <input id="mPrice" type="number" placeholder="نرخ" class="p-3 bg-gray-50 border rounded-xl text-center">
+                    <input id="mQty" type="number" placeholder="بڕ" class="p-3 bg-gray-50 border rounded-xl text-center">
                 </div>
-                <button onclick="addMedicine()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-black shadow-md">تۆمارکردن</button>
+                <button onclick="addMedicine()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-black">تۆمارکردن</button>
             </div>
-
-            <input type="text" id="searchInput" onkeyup="searchMedicine('inv')" placeholder="بگەڕێ لە کۆگا..." class="w-full p-4 rounded-2xl shadow-sm border outline-none font-bold text-right bg-white">
+            <input type="text" id="searchInput" onkeyup="searchMedicine('inv')" placeholder="بگەڕێ..." class="w-full p-4 rounded-2xl border outline-none text-right">
             <div id="medicineList" class="space-y-3"></div>
         </div>
 
         <div id="salesTab" class="tab-content p-4 max-w-2xl mx-auto space-y-4">
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border space-y-3">
-                <h3 class="font-black text-blue-600 border-b pb-2">گەڕان و فرۆشتن</h3>
-                <div class="flex gap-2">
-                    <input type="text" id="salesSearchInput" onkeyup="searchMedicine('sales')" placeholder="ناوی دەرمان یان بارکۆد..." class="flex-1 p-4 bg-gray-50 rounded-2xl border outline-none font-bold text-right">
-                    <button onclick="startScanner('sales')" class="bg-blue-600 text-white px-5 rounded-2xl shadow-md">
-                        <i class="fas fa-camera text-xl"></i>
-                    </button>
-                </div>
-                <div id="salesSearchResults" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                <input type="text" id="salesSearchInput" onkeyup="searchMedicine('sales')" placeholder="گەڕانی خێرا و فرۆشتن..." class="w-full p-4 bg-gray-50 border rounded-2xl outline-none text-right">
+                <div id="salesSearchResults" class="space-y-2"></div>
             </div>
-
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border space-y-4">
-                <h2 class="font-black text-blue-600 border-b pb-2">سەبەتەی کڕین</h2>
-                <div id="cartList" class="space-y-2 min-h-[100px]"></div>
-                
-                <div class="bg-blue-50 p-4 rounded-2xl space-y-3">
-                    <div class="flex items-center gap-4 font-bold text-sm">
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="payType" value="cash" checked onchange="toggleCustomerInput()"> نەقد</label>
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="payType" value="debt" onchange="toggleCustomerInput()"> قەرز</label>
-                    </div>
-                    <input id="customerName" type="text" placeholder="ناوی کڕیار بنووسە" class="hidden w-full p-3 bg-white border rounded-xl outline-none font-bold">
+                <div id="cartList" class="space-y-2 min-h-[50px]"></div>
+                <div class="bg-blue-50 p-4 rounded-2xl">
+                    <input type="text" id="customerName" placeholder="ناوی کڕیار بۆ قەرز" class="w-full p-3 bg-white border rounded-xl outline-none mb-2">
+                    <div class="flex gap-4 font-bold"><label><input type="radio" name="payType" value="cash" checked> نەقد</label><label><input type="radio" name="payType" value="debt"> قەرز</label></div>
                 </div>
-
-                <div class="flex justify-between items-center px-2">
-                    <span class="font-black text-gray-500">کۆی گشتی:</span>
-                    <span id="cartTotal" class="font-black text-3xl text-blue-600">0</span>
-                </div>
-                <button onclick="checkout()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xl shadow-lg">تەواوکردنی فرۆشتن و پرێنت</button>
-                <button onclick="clearCart()" class="w-full text-red-500 font-bold py-1">بەتاڵکردنەوە</button>
+                <div class="flex justify-between font-black text-2xl text-main"><span>کۆ:</span><span id="cartTotal">0</span></div>
+                <button onclick="checkout()" class="w-full bg-main text-white py-5 rounded-2xl font-black text-xl shadow-lg">تەواوکردن و پرێنت</button>
             </div>
         </div>
 
         <div id="reportTab" class="tab-content p-4 max-w-2xl mx-auto space-y-4">
-            <div class="bg-white p-6 rounded-[2rem] shadow-sm">
-                <h3 class="font-black text-blue-600 mb-3">گەڕان بەپێی ڕێککەوت</h3>
-                <div class="flex gap-2">
-                    <input type="date" id="reportDate" class="flex-1 p-3 bg-gray-50 rounded-xl border outline-none font-bold">
-                    <button onclick="loadReport()" class="bg-blue-600 text-white px-6 rounded-xl font-bold">بگەڕێ</button>
+            <input type="date" id="reportDate" onchange="loadReport()" class="w-full p-4 rounded-2xl border outline-none font-bold">
+            <div id="dailySummary" class="bg-slate-800 text-white p-8 rounded-[2.5rem] text-center"></div>
+            <div id="allSalesList" class="bg-white p-6 rounded-[2rem] shadow-sm space-y-2"></div>
+        </div>
+
+        <div id="settingsTab" class="tab-content p-4 max-w-2xl mx-auto space-y-4">
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border space-y-6">
+                <h2 class="text-xl font-black text-main border-b pb-2">ڕێکخستنی سیستم</h2>
+                
+                <div>
+                    <label class="block font-bold mb-2">ڕەنگی سەرەکی سیستم:</label>
+                    <div class="flex gap-3">
+                        <button onclick="changeColor('#2563eb')" class="w-10 h-10 rounded-full bg-[#2563eb] border-2 border-white shadow"></button>
+                        <button onclick="changeColor('#16a34a')" class="w-10 h-10 rounded-full bg-[#16a34a] border-2 border-white shadow"></button>
+                        <button onclick="changeColor('#dc2626')" class="w-10 h-10 rounded-full bg-[#dc2626] border-2 border-white shadow"></button>
+                        <button onclick="changeColor('#9333ea')" class="w-10 h-10 rounded-full bg-[#9333ea] border-2 border-white shadow"></button>
+                        <button onclick="changeColor('#0891b2')" class="w-10 h-10 rounded-full bg-[#0891b2] border-2 border-white shadow"></button>
+                    </div>
                 </div>
+
+                <div class="space-y-3 pt-4 border-t">
+                    <label class="block font-bold">گۆڕینی ڕەمزی چوونەژوورەوە:</label>
+                    <input id="newAdminPass" type="text" placeholder="ڕەمزی نوێی ئەدمین" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
+                    <input id="newStaffPass" type="text" placeholder="ڕەمزی نوێی ستاف" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
+                    <button onclick="saveSettings()" class="w-full bg-main text-white py-3 rounded-xl font-bold shadow">پاشەکەوتکردنی گۆڕانکارییەکان</button>
+                </div>
+
+                <button onclick="location.reload()" class="w-full text-gray-400 text-sm">دەرچوون و چوونەژوورەوە (Logout)</button>
             </div>
-            <div id="dailySummary" class="bg-blue-900 text-white p-8 rounded-[2.5rem] text-center shadow-xl"></div>
-            <div id="allSalesList" class="bg-white p-6 rounded-[2rem] shadow-sm space-y-3"></div>
         </div>
     </div>
 
-    <div id="receiptPrint" class="hidden" style="font-family: 'Arial'; padding: 20px; width: 300px; margin: 0 auto; text-align: center; direction: rtl;">
-        <h2 style="margin: 0; font-size: 22px;">سەیدەلیەی ڕۆژیار</h2>
-        <p style="margin: 5px 0; font-size: 12px; font-weight: bold;">ناونیشان: بەحرکە - جوت سایدی گشتی - بەرامبەر مزگەوتی مەلا ڕەشید</p>
-        <p style="margin: 5px 0; font-size: 11px;">بەروار و کات: <span id="rDateTime"></span></p>
-        <p id="rType" style="margin: 5px 0; font-weight: bold; border: 1px solid #000; display: inline-block; padding: 2px 10px;"></p>
-        <div style="border-bottom: 2px dashed #000; margin: 10px 0;"></div>
-        <div id="rItems" style="text-align: right; font-size: 14px; line-height: 1.8;"></div>
-        <div style="border-bottom: 2px dashed #000; margin: 10px 0;"></div>
-        <h3 style="margin: 0; font-size: 18px;">کۆی گشتی: <span id="rTotal"></span> د.ع</h3>
-        <p style="margin-top: 15px; font-size: 12px; font-weight: bold;">هیوای چاکبوونەوەت بۆ دەخوازین</p>
+    <div id="receiptPrint" class="hidden" style="font-family: Arial; padding: 20px; width: 280px; margin: 0 auto; text-align: center; direction: rtl;">
+        <h2 style="margin: 0; font-size: 20px;">سەیدەلیەی ڕۆژیار</h2>
+        <p style="font-size: 10px; margin: 5px 0;">بەحرکە - جوت سایدی گشتی - بەرامبەر مزگەوتی مەلا ڕەشید</p>
+        <div id="rItems" style="text-align: right; font-size: 13px; margin: 10px 0;"></div>
+        <h3 style="margin: 0;">کۆ: <span id="rTotal"></span> د.ع</h3>
     </div>
 
     <script>
         let allMedicines = []; let cart = []; let html5QrCode;
+        let adminPass = localStorage.getItem('adminPass') || "1998";
+        let staffPass = localStorage.getItem('staffPass') || "1111";
+        let mainColor = localStorage.getItem('mainColor') || "#2563eb";
+
+        // Apply Color on Start
+        function applyTheme() {
+            document.documentElement.style.setProperty('--main-color', mainColor);
+        }
+        applyTheme();
 
         function handleLogin() {
-            if(document.getElementById('passField').value === "1998") {
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                document.getElementById('reportDate').valueAsDate = new Date();
-                loadData();
-            } else { alert("هەڵەیە!"); }
+            const p = document.getElementById('passField').value;
+            if(p === adminPass) { startApp("admin"); }
+            else if(p === staffPass) { startApp("staff"); }
+            else { alert("ڕەمز هەڵەیە!"); }
+        }
+
+        function startApp(role) {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            if(role === "staff") {
+                document.getElementById('nav-report').style.display = 'none';
+                document.getElementById('nav-settings').style.display = 'none';
+            }
+            loadData();
         }
 
         function switchTab(t) {
             document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(x => x.classList.add('text-gray-400'), x => x.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(x => { x.classList.add('text-gray-400'); x.classList.remove('active'); });
             document.getElementById(t + 'Tab').classList.add('active');
             document.getElementById('btn-' + t).classList.add('active');
             document.getElementById('btn-' + t).classList.remove('text-gray-400');
-            if(t === 'report') loadReport();
             stopScanner();
         }
 
-        function toggleCustomerInput() {
-            const isDebt = document.querySelector('input[name="payType"]:checked').value === 'debt';
-            document.getElementById('customerName').classList.toggle('hidden', !isDebt);
+        // --- Settings Functions ---
+        function changeColor(c) {
+            mainColor = c;
+            applyTheme();
+            localStorage.setItem('mainColor', c);
         }
 
-        function startScanner(target) {
-            document.getElementById('scannerUI').classList.remove('hidden');
-            if(target === 'sales') switchTab('inventory'); // پیشاندانی کامێرا لە شاشەی کۆگا بۆ قەبارەی گەورە
-            
-            html5QrCode = new Html5Qrcode("reader");
-            html5QrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: 250 }, (text) => {
-                stopScanner();
-                const item = allMedicines.find(m => m.barcode === text);
-                if(item) {
-                    if(target === 'sales') {
-                        addToCart(item.id, item.name, item.price, item.qty);
-                        switchTab('sales');
-                    } else {
-                        document.getElementById('mBarcode').value = text;
-                    }
-                } else {
-                    alert("بارکۆدەکە لە کۆگا نییە!");
-                    if(target === 'inv') document.getElementById('mBarcode').value = text;
-                }
-            });
+        function saveSettings() {
+            const nap = document.getElementById('newAdminPass').value;
+            const nsp = document.getElementById('newStaffPass').value;
+            if(nap) { adminPass = nap; localStorage.setItem('adminPass', nap); }
+            if(nsp) { staffPass = nsp; localStorage.setItem('staffPass', nsp); }
+            alert("گۆڕانکارییەکان پاشەکەوت کران ✅");
         }
-        function stopScanner() { if(html5QrCode) html5QrCode.stop().then(() => document.getElementById('scannerUI').classList.add('hidden')).catch(e=>{}); }
 
+        // --- Core Business Logic (Inventory, Sales, Search) ---
         async function addMedicine() {
             const b = document.getElementById('mBarcode').value, n = document.getElementById('mName').value;
-            const t = document.getElementById('mType').value, p = parseFloat(document.getElementById('mPrice').value), q = parseInt(document.getElementById('mQty').value);
-            if(!b || !n || !p) return alert("تەواوی بکە");
-            await db.collection("inventory").add({ barcode: b, name: n, type: t, price: p, qty: q });
+            const p = parseFloat(document.getElementById('mPrice').value), q = parseInt(document.getElementById('mQty').value);
+            if(!n || !p) return alert("زانیارییەکان تەواو نین");
+            await db.collection("inventory").add({ barcode: b, name: n, type: document.getElementById('mType').value, price: p, qty: q });
             document.querySelectorAll('#inventoryTab input').forEach(i => i.value = "");
-            alert("سەرکەوتوو بوو");
         }
 
         function loadData() {
             db.collection("inventory").orderBy("name").onSnapshot(snap => {
-                allMedicines = [];
-                snap.forEach(doc => allMedicines.push({id: doc.id, ...doc.data()}));
+                allMedicines = []; snap.forEach(doc => allMedicines.push({id: doc.id, ...doc.data()}));
                 renderInventory(allMedicines);
             });
         }
@@ -226,120 +218,63 @@
         function renderInventory(data) {
             const div = document.getElementById('medicineList'); div.innerHTML = "";
             data.forEach(item => {
-                div.innerHTML += `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border-r-8 ${item.qty <= 5 ? 'border-red-500' : 'border-blue-500'} flex justify-between items-center">
-                        <div>
-                            <div class="font-black">${item.name} <span class="text-[10px] text-blue-500 bg-blue-50 px-2 rounded-lg">${item.type}</span></div>
-                            <div class="text-xs font-bold text-gray-400">بڕ: ${item.qty} | نرخ: ${item.price.toLocaleString()}</div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="addToCart('${item.id}', '${item.name}', ${item.price}, ${item.qty})" class="bg-blue-600 text-white p-3 rounded-xl shadow-md"><i class="fas fa-plus"></i></button>
-                            <button onclick="deleteMedicine('${item.id}')" class="text-red-300 p-2"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>`;
+                div.innerHTML += `<div class="bg-white p-4 rounded-2xl shadow-sm border-r-8 ${item.qty < 5 ? 'border-red-500':'border-main'} flex justify-between items-center">
+                    <div><div class="font-black">${item.name}</div><div class="text-xs text-gray-400">بڕ: ${item.qty} | نرخ: ${item.price.toLocaleString()}</div></div>
+                    <button onclick="addToCart('${item.id}','${item.name}',${item.price},${item.qty})" class="bg-main text-white p-3 rounded-xl shadow-md"><i class="fas fa-plus"></i></button>
+                </div>`;
             });
         }
 
-        async function deleteMedicine(id) { if(confirm("بیسڕمەوە؟")) await db.collection("inventory").doc(id).delete(); }
-
         function addToCart(id, name, price, stock) {
-            if(stock <= 0) return alert("نەماوە!");
-            cart.push({id, name, price});
-            updateCartUI();
+            if(stock <= 0) return alert("نەماوە");
+            cart.push({id, name, price}); updateCartUI();
         }
 
         function updateCartUI() {
-            const div = document.getElementById('cartList'); div.innerHTML = "";
-            let total = 0;
-            cart.forEach((item, idx) => {
-                total += item.price;
-                div.innerHTML += `<div class="flex justify-between bg-gray-50 p-3 rounded-xl border font-bold">
-                    <span>${item.name}</span>
-                    <div class="flex gap-3">
-                        <span>${item.price.toLocaleString()}</span>
-                        <button onclick="removeFromCart(${idx})" class="text-red-500"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>`;
-            });
+            const div = document.getElementById('cartList'); div.innerHTML = ""; let total = 0;
+            cart.forEach((item, idx) => { total += item.price; div.innerHTML += `<div class="flex justify-between bg-gray-50 p-2 rounded-lg border text-sm"><span>${item.name}</span><b>${item.price.toLocaleString()}</b></div>`; });
             document.getElementById('cartTotal').innerText = total.toLocaleString();
         }
 
-        function removeFromCart(idx) { cart.splice(idx, 1); updateCartUI(); }
-        function clearCart() { cart = []; updateCartUI(); }
-
         async function checkout() {
             if(cart.length === 0) return;
-            const payType = document.querySelector('input[name="payType"]:checked').value;
-            const customer = document.getElementById('customerName').value;
-            if(payType === 'debt' && !customer) return alert("ناوی کڕیار بنووسە");
-
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('en-CA');
+            const now = new Date(); const dateStr = now.toLocaleDateString('en-CA');
             let total = 0; let receiptHtml = "";
-            
             for(let item of cart) {
                 total += item.price;
                 receiptHtml += `<div style="display:flex; justify-content:space-between"><span>${item.name}</span><span>${item.price.toLocaleString()}</span></div>`;
                 const ref = db.collection("inventory").doc(item.id);
                 const doc = await ref.get();
-                const newQty = doc.data().qty - 1;
-                await ref.update({ qty: newQty });
-                await db.collection("sales").add({ 
-                    name: item.name, price: item.price, 
-                    timestamp: now, dateStr: dateStr, 
-                    type: payType, customer: customer || "نەقد" 
-                });
+                await ref.update({ qty: doc.data().qty - 1 });
+                await db.collection("sales").add({ name: item.name, price: item.price, dateStr, type: document.querySelector('input[name="payType"]:checked').value, customer: document.getElementById('customerName').value || "نەقد" });
             }
-
-            document.getElementById('rDateTime').innerText = now.toLocaleString('ku-IQ');
-            document.getElementById('rType').innerText = payType === 'debt' ? `قەرز: ${customer}` : "نەقد";
-            document.getElementById('rItems').innerHTML = receiptHtml;
-            document.getElementById('rTotal').innerText = total.toLocaleString();
-            window.print();
-            clearCart();
-        }
-
-        function loadReport() {
-            const selectedDate = document.getElementById('reportDate').value;
-            if(!selectedDate) return;
-            const summary = document.getElementById('dailySummary');
-            const list = document.getElementById('allSalesList');
-            db.collection("sales").where("dateStr", "==", selectedDate).get().then(snap => {
-                let cash = 0; let debt = 0; list.innerHTML = `<h3 class='font-black border-b pb-2 text-blue-600'>ڕاپۆرتی (${selectedDate})</h3>`;
-                snap.forEach(doc => {
-                    const s = doc.data();
-                    if(s.type === 'cash') cash += s.price; else debt += s.price;
-                    list.innerHTML += `<div class='flex justify-between py-2 border-b text-sm font-bold'>
-                        <span>${s.name} (${s.customer})</span>
-                        <span class="${s.type === 'debt' ? 'text-red-500' : 'text-green-600'}">${s.price.toLocaleString()}</span>
-                    </div>`;
-                });
-                summary.innerHTML = `<div class='grid grid-cols-2 gap-4'>
-                    <div><div class='text-xs opacity-70'>نەقد</div><div class='text-2xl font-black'>${cash.toLocaleString()}</div></div>
-                    <div><div class='text-xs opacity-70'>قەرز</div><div class='text-2xl font-black'>${debt.toLocaleString()}</div></div>
-                </div><div class='mt-4 pt-4 border-t border-white/20 text-3xl font-black'>کۆ: ${(cash+debt).toLocaleString()}</div>`;
-            });
+            document.getElementById('rItems').innerHTML = receiptHtml; document.getElementById('rTotal').innerText = total.toLocaleString();
+            window.print(); cart = []; updateCartUI();
         }
 
         function searchMedicine(target) {
-            if(target === 'inv') {
-                const t = document.getElementById('searchInput').value.toLowerCase();
-                renderInventory(allMedicines.filter(m => m.name.toLowerCase().includes(t) || m.barcode.includes(t)));
-            } else {
-                const t = document.getElementById('salesSearchInput').value.toLowerCase();
-                const resultsDiv = document.getElementById('salesSearchResults');
-                resultsDiv.innerHTML = "";
-                if(t.length < 1) return;
-
-                const filtered = allMedicines.filter(m => m.name.toLowerCase().includes(t) || m.barcode.includes(t));
-                filtered.forEach(item => {
-                    resultsDiv.innerHTML += `
-                        <div onclick="addToCart('${item.id}', '${item.name}', ${item.price}, ${item.qty}); document.getElementById('salesSearchInput').value='';" class="p-3 bg-blue-50 rounded-xl flex justify-between items-center cursor-pointer hover:bg-blue-100 border border-blue-200">
-                            <span class="font-bold">${item.name} (${item.qty})</span>
-                            <span class="text-blue-600 font-black">${item.price.toLocaleString()}</span>
-                        </div>`;
+            const t = (target === 'inv' ? document.getElementById('searchInput') : document.getElementById('salesSearchInput')).value.toLowerCase();
+            const filtered = allMedicines.filter(m => m.name.toLowerCase().includes(t) || m.barcode.includes(t));
+            if(target === 'inv') renderInventory(filtered);
+            else {
+                const res = document.getElementById('salesSearchResults'); res.innerHTML = "";
+                if(t) filtered.forEach(item => {
+                    res.innerHTML += `<div onclick="addToCart('${item.id}','${item.name}',${item.price},${item.qty}); document.getElementById('salesSearchInput').value='';" class="p-3 bg-blue-50 rounded-xl flex justify-between border cursor-pointer font-bold"><span>${item.name}</span><span class="text-main">${item.price.toLocaleString()}</span></div>`;
                 });
             }
+        }
+
+        function loadReport() {
+            const date = document.getElementById('reportDate').value;
+            db.collection("sales").where("dateStr", "==", date).get().then(snap => {
+                let cash = 0, debt = 0, listHtml = "";
+                snap.forEach(doc => { 
+                    const s = doc.data(); if(s.type === 'cash') cash += s.price; else debt += s.price;
+                    listHtml += `<div class="flex justify-between border-b py-2"><span>${s.name} (${s.customer})</span><span class="${s.type==='debt'?'text-red-500':'text-green-600'}">${s.price.toLocaleString()}</span></div>`;
+                });
+                document.getElementById('dailySummary').innerHTML = `<div class="grid grid-cols-2 gap-4"><div>نەقد<br>${cash.toLocaleString()}</div><div>قەرز<br>${debt.toLocaleString()}</div></div><div class="mt-4 text-2xl font-black">کۆ: ${(cash+debt).toLocaleString()}</div>`;
+                document.getElementById('allSalesList').innerHTML = listHtml;
+            });
         }
     </script>
 </body>
