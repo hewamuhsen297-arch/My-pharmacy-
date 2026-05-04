@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ڕۆژیار PRO - وەسڵ و ڕاپۆرت</title>
+    <title>ڕۆژیار PRO - گەڕانی فرۆشتن</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -63,7 +63,7 @@
         <div id="inventoryTab" class="tab-content active p-4 max-w-2xl mx-auto space-y-4">
             <div class="flex justify-between items-center bg-blue-600 p-5 rounded-[2rem] text-white shadow-lg">
                 <h2 class="font-black text-lg">بەڕێوەبردنی کۆگا</h2>
-                <button onclick="startScanner()" class="bg-white/20 p-3 rounded-2xl"><i class="fas fa-barcode text-xl"></i></button>
+                <button onclick="startScanner('inv')" class="bg-white/20 p-3 rounded-2xl"><i class="fas fa-barcode text-xl"></i></button>
             </div>
 
             <div id="scannerUI" class="hidden rounded-3xl overflow-hidden border-4 border-blue-500 shadow-2xl relative h-64 bg-black">
@@ -94,11 +94,22 @@
                 <button onclick="addMedicine()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-black shadow-md">تۆمارکردن</button>
             </div>
 
-            <input type="text" id="searchInput" onkeyup="searchMedicine()" placeholder="بگەڕێ..." class="w-full p-4 rounded-2xl shadow-sm border outline-none font-bold text-right bg-white">
+            <input type="text" id="searchInput" onkeyup="searchMedicine('inv')" placeholder="بگەڕێ لە کۆگا..." class="w-full p-4 rounded-2xl shadow-sm border outline-none font-bold text-right bg-white">
             <div id="medicineList" class="space-y-3"></div>
         </div>
 
         <div id="salesTab" class="tab-content p-4 max-w-2xl mx-auto space-y-4">
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border space-y-3">
+                <h3 class="font-black text-blue-600 border-b pb-2">گەڕان و فرۆشتن</h3>
+                <div class="flex gap-2">
+                    <input type="text" id="salesSearchInput" onkeyup="searchMedicine('sales')" placeholder="ناوی دەرمان یان بارکۆد..." class="flex-1 p-4 bg-gray-50 rounded-2xl border outline-none font-bold text-right">
+                    <button onclick="startScanner('sales')" class="bg-blue-600 text-white px-5 rounded-2xl shadow-md">
+                        <i class="fas fa-camera text-xl"></i>
+                    </button>
+                </div>
+                <div id="salesSearchResults" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
+
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border space-y-4">
                 <h2 class="font-black text-blue-600 border-b pb-2">سەبەتەی کڕین</h2>
                 <div id="cartList" class="space-y-2 min-h-[100px]"></div>
@@ -164,6 +175,7 @@
             document.getElementById('btn-' + t).classList.add('active');
             document.getElementById('btn-' + t).classList.remove('text-gray-400');
             if(t === 'report') loadReport();
+            stopScanner();
         }
 
         function toggleCustomerInput() {
@@ -171,24 +183,36 @@
             document.getElementById('customerName').classList.toggle('hidden', !isDebt);
         }
 
-        function startScanner() {
+        function startScanner(target) {
             document.getElementById('scannerUI').classList.remove('hidden');
+            if(target === 'sales') switchTab('inventory'); // پیشاندانی کامێرا لە شاشەی کۆگا بۆ قەبارەی گەورە
+            
             html5QrCode = new Html5Qrcode("reader");
             html5QrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: 250 }, (text) => {
                 stopScanner();
                 const item = allMedicines.find(m => m.barcode === text);
-                if(item) { addToCart(item.id, item.name, item.price, item.qty); } 
-                else { document.getElementById('mBarcode').value = text; alert("بارکۆدی نوێیە"); }
+                if(item) {
+                    if(target === 'sales') {
+                        addToCart(item.id, item.name, item.price, item.qty);
+                        switchTab('sales');
+                    } else {
+                        document.getElementById('mBarcode').value = text;
+                    }
+                } else {
+                    alert("بارکۆدەکە لە کۆگا نییە!");
+                    if(target === 'inv') document.getElementById('mBarcode').value = text;
+                }
             });
         }
-        function stopScanner() { if(html5QrCode) html5QrCode.stop().then(() => document.getElementById('scannerUI').classList.add('hidden')); }
+        function stopScanner() { if(html5QrCode) html5QrCode.stop().then(() => document.getElementById('scannerUI').classList.add('hidden')).catch(e=>{}); }
 
         async function addMedicine() {
             const b = document.getElementById('mBarcode').value, n = document.getElementById('mName').value;
             const t = document.getElementById('mType').value, p = parseFloat(document.getElementById('mPrice').value), q = parseInt(document.getElementById('mQty').value);
             if(!b || !n || !p) return alert("تەواوی بکە");
             await db.collection("inventory").add({ barcode: b, name: n, type: t, price: p, qty: q });
-            document.querySelectorAll('input').forEach(i => i.id !== 'passField' ? i.value = "" : null);
+            document.querySelectorAll('#inventoryTab input').forEach(i => i.value = "");
+            alert("سەرکەوتوو بوو");
         }
 
         function loadData() {
@@ -222,19 +246,25 @@
             if(stock <= 0) return alert("نەماوە!");
             cart.push({id, name, price});
             updateCartUI();
-            switchTab('sales');
         }
 
         function updateCartUI() {
             const div = document.getElementById('cartList'); div.innerHTML = "";
             let total = 0;
-            cart.forEach((item) => {
+            cart.forEach((item, idx) => {
                 total += item.price;
-                div.innerHTML += `<div class="flex justify-between bg-gray-50 p-3 rounded-xl border font-bold"><span>${item.name}</span><span>${item.price.toLocaleString()}</span></div>`;
+                div.innerHTML += `<div class="flex justify-between bg-gray-50 p-3 rounded-xl border font-bold">
+                    <span>${item.name}</span>
+                    <div class="flex gap-3">
+                        <span>${item.price.toLocaleString()}</span>
+                        <button onclick="removeFromCart(${idx})" class="text-red-500"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>`;
             });
             document.getElementById('cartTotal').innerText = total.toLocaleString();
         }
 
+        function removeFromCart(idx) { cart.splice(idx, 1); updateCartUI(); }
         function clearCart() { cart = []; updateCartUI(); }
 
         async function checkout() {
@@ -244,7 +274,7 @@
             if(payType === 'debt' && !customer) return alert("ناوی کڕیار بنووسە");
 
             const now = new Date();
-            const dateStr = now.toLocaleDateString('en-CA'); // YYYY-MM-DD
+            const dateStr = now.toLocaleDateString('en-CA');
             let total = 0; let receiptHtml = "";
             
             for(let item of cart) {
@@ -252,7 +282,8 @@
                 receiptHtml += `<div style="display:flex; justify-content:space-between"><span>${item.name}</span><span>${item.price.toLocaleString()}</span></div>`;
                 const ref = db.collection("inventory").doc(item.id);
                 const doc = await ref.get();
-                await ref.update({ qty: doc.data().qty - 1 });
+                const newQty = doc.data().qty - 1;
+                await ref.update({ qty: newQty });
                 await db.collection("sales").add({ 
                     name: item.name, price: item.price, 
                     timestamp: now, dateStr: dateStr, 
@@ -269,14 +300,12 @@
         }
 
         function loadReport() {
-            const selectedDate = document.getElementById('reportDate').value; // YYYY-MM-DD
+            const selectedDate = document.getElementById('reportDate').value;
             if(!selectedDate) return;
-            
             const summary = document.getElementById('dailySummary');
             const list = document.getElementById('allSalesList');
-            
             db.collection("sales").where("dateStr", "==", selectedDate).get().then(snap => {
-                let cash = 0; let debt = 0; list.innerHTML = `<h3 class='font-black border-b pb-2 text-blue-600'>فرۆشتنی ڕێککەوتی (${selectedDate})</h3>`;
+                let cash = 0; let debt = 0; list.innerHTML = `<h3 class='font-black border-b pb-2 text-blue-600'>ڕاپۆرتی (${selectedDate})</h3>`;
                 snap.forEach(doc => {
                     const s = doc.data();
                     if(s.type === 'cash') cash += s.price; else debt += s.price;
@@ -288,13 +317,29 @@
                 summary.innerHTML = `<div class='grid grid-cols-2 gap-4'>
                     <div><div class='text-xs opacity-70'>نەقد</div><div class='text-2xl font-black'>${cash.toLocaleString()}</div></div>
                     <div><div class='text-xs opacity-70'>قەرز</div><div class='text-2xl font-black'>${debt.toLocaleString()}</div></div>
-                </div><div class='mt-4 pt-4 border-t border-white/20 text-3xl font-black'>کۆی گشتی: ${(cash+debt).toLocaleString()}</div>`;
+                </div><div class='mt-4 pt-4 border-t border-white/20 text-3xl font-black'>کۆ: ${(cash+debt).toLocaleString()}</div>`;
             });
         }
 
-        function searchMedicine() {
-            const t = document.getElementById('searchInput').value.toLowerCase();
-            renderInventory(allMedicines.filter(m => m.name.toLowerCase().includes(t) || m.barcode.includes(t)));
+        function searchMedicine(target) {
+            if(target === 'inv') {
+                const t = document.getElementById('searchInput').value.toLowerCase();
+                renderInventory(allMedicines.filter(m => m.name.toLowerCase().includes(t) || m.barcode.includes(t)));
+            } else {
+                const t = document.getElementById('salesSearchInput').value.toLowerCase();
+                const resultsDiv = document.getElementById('salesSearchResults');
+                resultsDiv.innerHTML = "";
+                if(t.length < 1) return;
+
+                const filtered = allMedicines.filter(m => m.name.toLowerCase().includes(t) || m.barcode.includes(t));
+                filtered.forEach(item => {
+                    resultsDiv.innerHTML += `
+                        <div onclick="addToCart('${item.id}', '${item.name}', ${item.price}, ${item.qty}); document.getElementById('salesSearchInput').value='';" class="p-3 bg-blue-50 rounded-xl flex justify-between items-center cursor-pointer hover:bg-blue-100 border border-blue-200">
+                            <span class="font-bold">${item.name} (${item.qty})</span>
+                            <span class="text-blue-600 font-black">${item.price.toLocaleString()}</span>
+                        </div>`;
+                });
+            }
         }
     </script>
 </body>
